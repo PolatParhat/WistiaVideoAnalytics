@@ -1,0 +1,24 @@
+# Secrets
+.env
+# The original requirements .docx contains the Wistia API token; the redacted copy is requirements.md
+docs/00_requirements/*.docx
+
+# Python
+.venv*/
+__pycache__/
+
+# OS / tools
+.DS_Store
+.claude/
+
+# Data (never in Git)
+data/raw/
+lake/
+
+# Large media
+*.mov
+*.mp4
+
+# Infra build output
+infra/cdk.out/
+infra/build/
