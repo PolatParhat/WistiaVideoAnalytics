@@ -25,10 +25,11 @@ Newest entries are at the end of each table/log.
 | 2026-11-03 | Simulation window 2026-03-17 → 2026-03-23 | 39 events, ≥3 per day, both media active (Step 1 finding 6) |
 | 2026-11-03 | Architecture proposed: EventBridge Scheduler (disabled) → Step Functions → Lambda ingest → S3 raw → Glue 5 PySpark → Iceberg (Glue Catalog) → Athena; DynamoDB watermark; Secrets Manager; CloudWatch + SNS; CDK; GitHub Actions with OIDC | Serverless, < $1 for the 7-day simulation, idempotent reruns via Iceberg MERGE. MWAA rejected on cost (~$0.49/h). Details: docs/02_design/README.md |
 | 2026-11-03 | Incremental window = watermark + 1 day − 1-day lookback → run_date; watermark advanced only after transform + DQ succeed | Late events are re-read; upsert makes it safe; a failed run is caught up automatically |
+| 2026-11-03 | Step 2 design approved | User (acting as SME) |
 
 ## Change log
 
 - 2026-11-02: Project scaffold created.
 - 2026-11-03: Plan agreed (Steps 0–7), scaffold pushed to GitHub `main`.
 - 2026-11-03: Step 1 API exploration done; findings in docs/01_api_exploration/README.md.
-- 2026-11-03: Step 2 design proposed in docs/02_design/README.md (awaiting user approval).
+- 2026-11-03: Step 2 design proposed in docs/02_design/README.md (approved the same day).

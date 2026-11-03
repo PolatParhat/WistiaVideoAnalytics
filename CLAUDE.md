@@ -28,8 +28,8 @@ State: STATUS.md · History: docs/decisions.md (read it before re-deciding anyth
 |---|---|---|
 | 0 | Project scaffold | Done |
 | 1 | API exploration: auth, endpoints, fields, pagination, date filters (read-only calls) | Done (`docs/01_api_exploration/`) |
-| 2 | Architecture + data model, one-page design + diagram (user approves; acts as SME) | Proposed (`docs/02_design/`), awaiting approval |
-| 3 | Build: Python ingestion, PySpark transforms, DQ checks, tests, GitHub Actions CI/CD, AWS IaC | Not started |
+| 2 | Architecture + data model, one-page design + diagram (user approves; acts as SME) | Done (approved 2026-11-03, `docs/02_design/`) |
+| 3 | Build: Python ingestion, PySpark transforms, DQ checks, tests, GitHub Actions CI/CD, AWS IaC | Next |
 | 4 | Deploy to AWS (user runs the commands) | Not started |
 | 5 | Simulated 7-day production run: backfill script, 7 runs with `run_date`, run-log evidence | Not started |
 | 6 | Dashboard (optional FR11) | Not started |

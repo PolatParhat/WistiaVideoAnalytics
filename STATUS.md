@@ -1,8 +1,8 @@
 # Status: Wistia Video Analytics Pipeline
-Updated: 2026-11-03 (Step 2 proposed)
+Updated: 2026-11-03 (Step 2 approved)
 
 ## Where we are
-Step 1 done; Step 2 design proposed in `docs/02_design/README.md`, awaiting user approval. Both not yet merged, on branch `worktree-step-1-plan-api-exploration`
+Step 1 done; Step 2 design approved (`docs/02_design/README.md`). PR open, not yet merged, on branch `worktree-step-1-plan-api-exploration`
 (worktree `.claude/worktrees/step-1-plan-api-exploration`). Plan agreed: Steps 0–7 in CLAUDE.md.
 
 ## Done this session
@@ -12,7 +12,7 @@ Step 1 done; Step 2 design proposed in `docs/02_design/README.md`, awaiting user
 - Requirements explained to the user; plan agreed; decisions logged (simulated 7-day run, user = SME, build-first-then-teach).
 
 ## Next actions
-1. User approves `docs/02_design/README.md` (or asks for changes); push branch, open PR, user merges.
+1. User reviews the PR (check the Mermaid diagrams render on GitHub) and merges.
 2. Step 3: build in stages 3.1–3.11 (design doc section 5), one commit per stage, on a new branch → PR.
 
 ## Open items

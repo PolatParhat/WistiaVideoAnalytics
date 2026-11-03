@@ -1,6 +1,6 @@
 # Step 2: Architecture and data model
 
-Status: **proposed 2026-11-03**, awaiting approval (the user acts as SME).
+Status: **approved 2026-11-03** by the user (acting as SME).
 Inputs: [requirements](../00_requirements/requirements.md), [Step 1 API findings](../01_api_exploration/README.md).
 
 ## 1. Architecture
@@ -158,7 +158,7 @@ erDiagram
 | `fact_media_daily` | media × date | From `by_date`; `play_rate` = `play_count` / `load_count` (null when 0 loads); `unique_visitors` from events |
 | `ops.pipeline_runs`, `ops.dq_results` | 1 row per run / per check per run | Evidence and monitoring |
 
-**Changes from the requirements' simplified model (approved 2026-11-03):** `play_rate` moved to `fact_media_daily`, because
+**Changes from the requirements' simplified model:** `play_rate` moved to `fact_media_daily`, because
 Wistia reports loads per media per day only, not per visitor. `fact_media_daily` is added. Extra descriptive columns are added
 to both dimensions. `channel` is an assumption from config: `9k4tbcdfg0` = Facebook, `8hunphufxp` = YouTube.
 
