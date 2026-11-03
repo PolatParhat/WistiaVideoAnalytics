@@ -12,7 +12,6 @@ Facebook and YouTube.
 | 1 | [API exploration: endpoints, volume, findings](docs/01_api_exploration/README.md) |
 | 2 | [Architecture and data model](docs/02_design/README.md) |
 | 2 | [Design walkthrough speaker notes (SME recording)](docs/02_design/speaker_notes.md) |
-| 2 | [Design walkthrough video (GitHub release)](https://github.com/PolatParhat/WistiaVideoAnalytics/releases/tag/design-walkthrough-v1) |
 | — | [Decisions and change log](docs/decisions.md) |
 
 ## Setup
