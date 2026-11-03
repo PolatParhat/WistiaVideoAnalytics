@@ -53,7 +53,7 @@ No rate-limit headers were returned. Wistia documents a limit of 600 requests pe
    per-event traffic source derived from `embed_url`.
 6. **Recent activity is low.** `9k4tbcdfg0` has had no events since 2026-07-26. The busiest recent 7 days with events every day
    are 2026-10-12 → 2026-10-18 (13 events); the busiest 7 days overall with at least 3 events per day are
-   2026-03-17 → 2026-03-23 (39 events, both media active). Candidate windows for the simulated 7-day run.
+   2026-03-17 → 2026-03-23 (39 events: `8hunphufxp` 11, `9k4tbcdfg0` 28; each media has one day with 0). Candidate windows for the simulated 7-day run.
 7. **Media metadata changes rarely** (`updated` 2026-06-29 for both). Re-pulling the 2 media records every run is cheapest;
    incremental logic applies to events and daily stats (FR7).
 8. **Personal data:** events contain IP addresses and city-level location. Raw data stays in a private, encrypted bucket;
