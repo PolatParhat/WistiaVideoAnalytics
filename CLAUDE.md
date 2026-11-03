@@ -11,8 +11,11 @@ State: STATUS.md · History: docs/decisions.md (read it before re-deciding anyth
   into a dimensional model, and report on video engagement (Facebook / YouTube) for the marketing team.
 - **Constraints (from requirements):** AWS (or Azure) services only; **no dbt**; Python for API ingestion;
   **PySpark** for transformation; GitHub for version control and CI/CD (GitHub Actions); architecture must be
-  presented to the SME for approval; pipeline runs in production mode for **7 consecutive days**.
+  presented to the SME for approval; FR8 "7 consecutive days in production" is met by a **simulated
+  7-day backfill** on the real AWS pipeline (user decision 2026-11-03, see docs/decisions.md).
 - **Scope:** media IDs `8hunphufxp` and `9k4tbcdfg0` only.
+- **Build style:** grow code like a real engineer: one working script first, then move reusable parts into a
+  common library, then tests, CI, infra. One commit per stage so the history shows the evolution.
 - **Required behaviour:** token auth, pagination (all pages), incremental pulls on created_at/updated_at,
   error handling, retries, logging.
 - **Target model (simplified, from requirements):** `dim_media`, `dim_visitor`, `fact_media_engagement`.
@@ -24,7 +27,16 @@ State: STATUS.md · History: docs/decisions.md (read it before re-deciding anyth
 | Step | Description | Status |
 |---|---|---|
 | 0 | Project scaffold | Done |
-| (plan to be agreed) | | |
+| 1 | API exploration: auth, endpoints, fields, pagination, date filters (read-only calls) | Done (`docs/01_api_exploration/`) |
+| 2 | Architecture + data model, one-page design + diagram (user approves; acts as SME) | Done (approved 2026-11-03, `docs/02_design/`) |
+| 3 | Build: Python ingestion, PySpark transforms, DQ checks, tests, GitHub Actions CI/CD, AWS IaC | Next |
+| 4 | Deploy to AWS (user runs the commands) | Not started |
+| 5 | Simulated 7-day production run: backfill script, 7 runs with `run_date`, run-log evidence | Not started |
+| 6 | Dashboard (optional FR11) | Not started |
+| 7 | README, walkthrough video, AWS teardown; then hand-typing tutorial in a separate practice folder | Not started |
+
+Timeline: finish in a couple of days. After the design is approved Claude builds everything; then
+explains it so the user retypes it by hand (separate practice folder, never the production repo).
 
 ## Repo layout
 
