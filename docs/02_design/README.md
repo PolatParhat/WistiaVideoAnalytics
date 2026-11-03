@@ -1,6 +1,6 @@
 # Step 2: Architecture and data model
 
-Status: **approved 2026-11-03** by the user (acting as SME).
+Status: **approved 2026-11-03** by the user; submitted to the SME for sign-off (pending).
 Inputs: [requirements](../00_requirements/requirements.md), [Step 1 API findings](../01_api_exploration/README.md).
 
 ## 1. Architecture

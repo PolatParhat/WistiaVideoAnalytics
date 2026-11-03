@@ -27,6 +27,8 @@ Newest entries are at the end of each table/log.
 | 2026-11-03 | Incremental window = watermark + 1 day − 1-day lookback → run_date; watermark advanced only after transform + DQ succeed | Late events are re-read; upsert makes it safe; a failed run is caught up automatically |
 | 2026-11-03 | Step 2 design approved | User (acting as SME) |
 | 2026-11-03 | Diagrams drawn in draw.io (`.drawio` source + 2× PNG export in `docs/02_design/`), replacing Mermaid | User: Mermaid output quality too low for the deliverable; draw.io gives AWS icons and exact layout |
+| 2026-11-03 | Walkthrough videos are not put on GitHub (not committed, not as release assets); shared with the SME directly. `*.mov`/`*.mp4` stay ignored | User decision: recordings are review material, not part of the code deliverable; keeps the public repo free of large binaries and of anything accidentally shown on screen |
+| 2026-11-03 | Design submitted to the external SME; Step 3 waits for their approval | User decision: get real sign-off before building (the earlier 'user acts as SME' approval stands as the internal approval) |
 
 ## Change log
 
@@ -35,3 +37,5 @@ Newest entries are at the end of each table/log.
 - 2026-11-03: Step 1 API exploration done; findings in docs/01_api_exploration/README.md.
 - 2026-11-03: Step 2 design proposed in docs/02_design/README.md (approved the same day).
 - 2026-11-03: PR #1 (Steps 1–2) merged. Architecture and data model redrawn in draw.io.
+- 2026-11-03: Design walkthrough recorded by the user (kept local, not on GitHub); submitted to the SME.
+- 2026-11-03: Session handoff; waiting for SME approval before Step 3.
