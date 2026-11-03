@@ -5,41 +5,9 @@ Inputs: [requirements](../00_requirements/requirements.md), [Step 1 API findings
 
 ## 1. Architecture
 
-```mermaid
-flowchart LR
-    subgraph Trigger
-        EB["EventBridge Scheduler<br/>daily 06:00 UTC<br/>(run_date = yesterday)"]
-        SIM["scripts/simulate_week.py<br/>(run_date = each of 7 days)"]
-    end
-    subgraph "Step Functions: wistia-daily-pipeline"
-        L["Lambda (Python 3.12)<br/>ingest: auth, pagination,<br/>incremental window, retries"]
-        G["Glue 5 job (PySpark)<br/>raw → silver → gold<br/>+ data-quality checks"]
-        U["Advance watermark<br/>(only after success)"]
-        L --> G --> U
-    end
-    W[("Wistia Stats API")]
-    SM["Secrets Manager<br/>wistia/api-token"]
-    DDB[("DynamoDB<br/>watermark per media")]
-    S3R[("S3 raw/<br/>JSON as received")]
-    S3W[("S3 warehouse/<br/>Iceberg tables<br/>silver · gold · ops")]
-    CAT["Glue Data Catalog"]
-    ATH["Athena<br/>SQL + reports"]
-    CW["CloudWatch Logs<br/>+ alarm → SNS email"]
+![Pipeline architecture](architecture.png)
 
-    EB --> L
-    SIM --> L
-    SM -.->|token| L
-    L <-->|HTTPS| W
-    L -.->|watermark| DDB
-    L --> S3R
-    S3R --> G
-    G --> S3W
-    U -.->|last_loaded_date| DDB
-    S3W --- CAT
-    CAT --> ATH
-    L -.->|logs| CW
-    G -.->|logs| CW
-```
+Source: [`architecture.drawio`](architecture.drawio) (open in draw.io / diagrams.net to edit, then File → Export as PNG, 200%).
 
 | Part | AWS service | Why this one |
 |---|---|---|
@@ -103,52 +71,9 @@ URL; `direct` if empty.
 
 ### Gold (star schema)
 
-```mermaid
-erDiagram
-    dim_media ||--o{ fact_media_engagement : media_id
-    dim_visitor ||--o{ fact_media_engagement : visitor_id
-    dim_media ||--o{ fact_media_daily : media_id
-    dim_media {
-        string media_id PK "hashed_id, e.g. 9k4tbcdfg0"
-        string title
-        string url
-        string channel "config mapping (assumption)"
-        string project_name
-        double duration_seconds
-        timestamp created_at
-        timestamp updated_at
-    }
-    dim_visitor {
-        string visitor_id PK "visitor_key"
-        string ip_address
-        string country
-        string region
-        string city
-        string browser
-        string platform
-        boolean is_mobile
-        timestamp first_seen_at
-        timestamp last_seen_at
-    }
-    fact_media_engagement {
-        string media_id FK
-        string visitor_id FK
-        date date
-        int play_count
-        double total_watch_time_seconds
-        double watched_percent
-        string traffic_source
-    }
-    fact_media_daily {
-        string media_id FK
-        date date
-        int load_count
-        int play_count
-        double play_rate
-        double hours_watched
-        int unique_visitors
-    }
-```
+![Gold data model](data_model.png)
+
+Source: [`data_model.drawio`](data_model.drawio).
 
 | Table | Grain | Rules |
 |---|---|---|

@@ -26,6 +26,7 @@ Newest entries are at the end of each table/log.
 | 2026-11-03 | Architecture proposed: EventBridge Scheduler (disabled) → Step Functions → Lambda ingest → S3 raw → Glue 5 PySpark → Iceberg (Glue Catalog) → Athena; DynamoDB watermark; Secrets Manager; CloudWatch + SNS; CDK; GitHub Actions with OIDC | Serverless, < $1 for the 7-day simulation, idempotent reruns via Iceberg MERGE. MWAA rejected on cost (~$0.49/h). Details: docs/02_design/README.md |
 | 2026-11-03 | Incremental window = watermark + 1 day − 1-day lookback → run_date; watermark advanced only after transform + DQ succeed | Late events are re-read; upsert makes it safe; a failed run is caught up automatically |
 | 2026-11-03 | Step 2 design approved | User (acting as SME) |
+| 2026-11-03 | Diagrams drawn in draw.io (`.drawio` source + 2× PNG export in `docs/02_design/`), replacing Mermaid | User: Mermaid output quality too low for the deliverable; draw.io gives AWS icons and exact layout |
 
 ## Change log
 
@@ -33,3 +34,4 @@ Newest entries are at the end of each table/log.
 - 2026-11-03: Plan agreed (Steps 0–7), scaffold pushed to GitHub `main`.
 - 2026-11-03: Step 1 API exploration done; findings in docs/01_api_exploration/README.md.
 - 2026-11-03: Step 2 design proposed in docs/02_design/README.md (approved the same day).
+- 2026-11-03: PR #1 (Steps 1–2) merged. Architecture and data model redrawn in draw.io.
