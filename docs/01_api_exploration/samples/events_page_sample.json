@@ -1,0 +1,72 @@
+[
+  {
+    "received_at": "2026-07-26T10:27:31.000Z",
+    "event_key": "1785061_628c95fe-e5b5-4ca8-bfa3-19de7987681e-5947a7ba8-ef869c52ae98-3c8e",
+    "ip": "172.59.x.x",
+    "country": "US",
+    "region": "New Jersey",
+    "city": "Newark",
+    "lat": 40.0,
+    "lon": -74.0,
+    "org": "T-Mobile USA",
+    "email": null,
+    "percent_viewed": 0.0,
+    "embed_url": "https://dataengineerinterviews.com/",
+    "conversion_type": "",
+    "conversion_data": {},
+    "iframe_heatmap_url": "https://api.wistia.com/v1/stats/events/1785061_628c95fe-e5b5-4ca8-bfa3-19de7987681e-5947a7ba8-ef869c52ae98-3c8e/iframe.html?public_token=<masked>",
+    "visitor_key": "1784567_2185e74a-44c4-4e81-89b3-a8221877ee85-c7c3369d8-c9bdb4eedcdb-f0fd",
+    "user_agent_details": {
+      "browser": "Chrome",
+      "browser_version": "150",
+      "platform": "Android",
+      "mobile": true
+    },
+    "media_id": "9k4tbcdfg0",
+    "media_name": "The Gap Method",
+    "media_url": "https://chrisgarzon19.wistia.com/medias/9k4tbcdfg0",
+    "thumbnail": {
+      "url": "http://embed.wistia.com/deliveries/5859ba870f8900526610e7d2126ee9d9.bin",
+      "width": 1920,
+      "height": 1080,
+      "fileSize": 1466800,
+      "contentType": "image/png",
+      "type": "StillImageFile"
+    }
+  },
+  {
+    "received_at": "2026-07-22T18:24:25.000Z",
+    "event_key": "1784744_a2941c11-304f-4206-b04c-d2c47514ea5d-5dbffad63-f830157f7ace-c0c9",
+    "ip": "76.204.x.x",
+    "country": "US",
+    "region": "Texas",
+    "city": "Frisco",
+    "lat": 33.0,
+    "lon": -96.0,
+    "org": "AT&T Internet",
+    "email": null,
+    "percent_viewed": 1.0,
+    "embed_url": "",
+    "conversion_type": "",
+    "conversion_data": {},
+    "iframe_heatmap_url": "https://api.wistia.com/v1/stats/events/1784744_a2941c11-304f-4206-b04c-d2c47514ea5d-5dbffad63-f830157f7ace-c0c9/iframe.html?public_token=<masked>",
+    "visitor_key": "1784744_c3ccf654-5a55-47cf-8345-d834542fad66-754f7011c-6f5f6bbe1511-18a0",
+    "user_agent_details": {
+      "browser": "Safari",
+      "browser_version": "26",
+      "platform": "iOS (iPhone)",
+      "mobile": true
+    },
+    "media_id": "9k4tbcdfg0",
+    "media_name": "The Gap Method",
+    "media_url": "https://chrisgarzon19.wistia.com/medias/9k4tbcdfg0",
+    "thumbnail": {
+      "url": "http://embed.wistia.com/deliveries/5859ba870f8900526610e7d2126ee9d9.bin",
+      "width": 1920,
+      "height": 1080,
+      "fileSize": 1466800,
+      "contentType": "image/png",
+      "type": "StillImageFile"
+    }
+  }
+]

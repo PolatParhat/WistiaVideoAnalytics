@@ -14,6 +14,8 @@ State: STATUS.md · History: docs/decisions.md (read it before re-deciding anyth
   presented to the SME for approval; FR8 "7 consecutive days in production" is met by a **simulated
   7-day backfill** on the real AWS pipeline (user decision 2026-11-03, see docs/decisions.md).
 - **Scope:** media IDs `8hunphufxp` and `9k4tbcdfg0` only.
+- **Build style:** grow code like a real engineer: one working script first, then move reusable parts into a
+  common library, then tests, CI, infra. One commit per stage so the history shows the evolution.
 - **Required behaviour:** token auth, pagination (all pages), incremental pulls on created_at/updated_at,
   error handling, retries, logging.
 - **Target model (simplified, from requirements):** `dim_media`, `dim_visitor`, `fact_media_engagement`.
@@ -25,8 +27,8 @@ State: STATUS.md · History: docs/decisions.md (read it before re-deciding anyth
 | Step | Description | Status |
 |---|---|---|
 | 0 | Project scaffold | Done |
-| 1 | API exploration: auth, endpoints, fields, pagination, date filters (read-only calls) | In progress |
-| 2 | Architecture + data model, one-page design + diagram (user approves; acts as SME) | Not started |
+| 1 | API exploration: auth, endpoints, fields, pagination, date filters (read-only calls) | Done (`docs/01_api_exploration/`) |
+| 2 | Architecture + data model, one-page design + diagram (user approves; acts as SME) | Next |
 | 3 | Build: Python ingestion, PySpark transforms, DQ checks, tests, GitHub Actions CI/CD, AWS IaC | Not started |
 | 4 | Deploy to AWS (user runs the commands) | Not started |
 | 5 | Simulated 7-day production run: backfill script, 7 runs with `run_date`, run-log evidence | Not started |

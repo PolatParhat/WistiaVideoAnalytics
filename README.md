@@ -9,6 +9,7 @@ Facebook and YouTube.
 | Step | Document |
 |---|---|
 | 0 | [Requirements (redacted)](docs/00_requirements/requirements.md) |
+| 1 | [API exploration: endpoints, volume, findings](docs/01_api_exploration/README.md) |
 | — | [Decisions and change log](docs/decisions.md) |
 
 ## Setup

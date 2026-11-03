@@ -1,25 +1,25 @@
 # Status: Wistia Video Analytics Pipeline
-Updated: 2026-11-03 (Step 1 started)
+Updated: 2026-11-03 (Step 1 done)
 
 ## Where we are
-Step 1, API exploration, in progress on branch `worktree-step-1-plan-api-exploration`
+Step 1, API exploration, done (not yet merged) on branch `worktree-step-1-plan-api-exploration`
 (worktree `.claude/worktrees/step-1-plan-api-exploration`). Plan agreed: Steps 0–7 in CLAUDE.md.
 
 ## Done this session
 - Scaffold created and pushed to GitHub `main` (public repo PolatParhat/WistiaVideoAnalytics); commit 506cd47.
+- Step 1: both Bearer and Basic auth work; endpoints, pagination (ends on `[]`), inclusive date filters, volume
+  (1,242 events total), duplicate `event_key`, no channel field. Masked samples committed.
 - Requirements explained to the user; plan agreed; decisions logged (simulated 7-day run, user = SME, build-first-then-teach).
 
 ## Next actions
-1. Step 1: call the Wistia API (read-only) for media `8hunphufxp`, `9k4tbcdfg0`: auth method, endpoints, fields,
-   pagination, date filters, data volume per day. Write `docs/01_api_exploration/`.
+1. User reviews `docs/01_api_exploration/README.md`; push branch and open PR when the user says so.
 2. Step 2: one-page architecture + data model design with diagram; user approves.
 3. Step 3: build everything on a branch → PR → user merges.
 
 ## Open items
-- Auth: FR2 says "Basic Auth", the example uses `Authorization: Bearer`. Check both in Step 1.
+- Step 2 decisions to make: Bearer vs Basic (both work), channel source, fact grain/metrics, 7-day window
+  (see docs/01_api_exploration/README.md section 5).
 - The example snippet uses media ID `v08dlrgr7v`; in-scope IDs are `8hunphufxp` and `9k4tbcdfg0`.
-- `dim_media.channel` (Facebook/YouTube): Wistia likely has no such field; decide the source in Step 2.
-- Fact table `date`: viewing date (event date) vs load date; decide in Step 2.
 
 ## Environment gotchas
 - `.env` (token) lives in the main project folder only, not in worktrees; scripts read it from there.

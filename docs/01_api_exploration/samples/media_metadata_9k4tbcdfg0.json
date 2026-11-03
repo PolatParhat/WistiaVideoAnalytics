@@ -1,0 +1,39 @@
+{
+  "id": 128512814,
+  "hashed_id": "9k4tbcdfg0",
+  "progress": 1.0,
+  "type": "Video",
+  "archived": false,
+  "name": "The Gap Method",
+  "duration": 2195.01,
+  "created": "2025-01-04T00:35:10+00:00",
+  "updated": "2026-06-29T22:50:15+00:00",
+  "description": "",
+  "status": "ready",
+  "thumbnail": {
+    "url": "https://embed-ssl.wistia.com/deliveries/5859ba870f8900526610e7d2126ee9d9.jpg?image_crop_resized=200x120",
+    "width": 200,
+    "height": 120
+  },
+  "tags": [],
+  "assets": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "type": "OriginalFile",
+      "fileSize": 615189934,
+      "contentType": "video/mp4",
+      "url": "http://embed.wistia.com/deliveries/0e2b3175cd0ede6599afa21eb6e594e1.bin"
+    }
+  ],
+  "project": {
+    "id": 9324039,
+    "hashed_id": "47ue7dq3st",
+    "name": "AE MW"
+  },
+  "share_link": {
+    "hashed_id": "d1jrv7funqzyjtw",
+    "url": "https://chrisgarzon19.wistia.com/s/d1jrv7funqzyjtw",
+    "visibility": "unlocked"
+  }
+}
