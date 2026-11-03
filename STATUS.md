@@ -1,8 +1,8 @@
 # Status: Wistia Video Analytics Pipeline
-Updated: 2026-11-03 (Step 1 done)
+Updated: 2026-11-03 (Step 2 proposed)
 
 ## Where we are
-Step 1, API exploration, done (not yet merged) on branch `worktree-step-1-plan-api-exploration`
+Step 1 done; Step 2 design proposed in `docs/02_design/README.md`, awaiting user approval. Both not yet merged, on branch `worktree-step-1-plan-api-exploration`
 (worktree `.claude/worktrees/step-1-plan-api-exploration`). Plan agreed: Steps 0–7 in CLAUDE.md.
 
 ## Done this session
@@ -12,13 +12,12 @@ Step 1, API exploration, done (not yet merged) on branch `worktree-step-1-plan-a
 - Requirements explained to the user; plan agreed; decisions logged (simulated 7-day run, user = SME, build-first-then-teach).
 
 ## Next actions
-1. User reviews `docs/01_api_exploration/README.md`; push branch and open PR when the user says so.
-2. Step 2: one-page architecture + data model design with diagram; user approves.
-3. Step 3: build everything on a branch → PR → user merges.
+1. User approves `docs/02_design/README.md` (or asks for changes); push branch, open PR, user merges.
+2. Step 3: build in stages 3.1–3.11 (design doc section 5), one commit per stage, on a new branch → PR.
 
 ## Open items
-- Step 2 decisions to make: Bearer vs Basic (both work), channel source, fact grain/metrics, 7-day window
-  (see docs/01_api_exploration/README.md section 5).
+- Step 2 choices made by the user (all recommended): Bearer, channel from config, fact grain + `fact_media_daily`,
+  simulation window 2026-03-17 → 23. Mermaid diagrams not render-tested locally; check them on GitHub.
 - The example snippet uses media ID `v08dlrgr7v`; in-scope IDs are `8hunphufxp` and `9k4tbcdfg0`.
 
 ## Environment gotchas
