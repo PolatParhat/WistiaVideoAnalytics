@@ -1,10 +1,9 @@
 # Status: Wistia Video Analytics Pipeline
-Updated: 2026-11-03 (draw.io diagrams)
+Updated: 2026-11-03 (design video)
 
 ## Where we are
-Steps 1–2 done and merged (PR #1, PR #2 draw.io diagrams). SME speaker notes on branch
-`worktree-step-2-sme-speaker-notes`, PR pending. User records the design walkthrough and submits to the SME
-before Step 3 starts.
+Steps 1–2 done and merged (PRs #1–#3). Design walkthrough video recorded; published as GitHub release
+`design-walkthrough-v1` (the user runs the upload) and submitted to the SME. Waiting for SME feedback before Step 3.
 
 ## Done this session
 - Scaffold created and pushed to GitHub `main` (public repo PolatParhat/WistiaVideoAnalytics); commit 506cd47.
@@ -13,7 +12,7 @@ before Step 3 starts.
 - Requirements explained to the user; plan agreed; decisions logged (simulated 7-day run, user = SME, build-first-then-teach).
 
 ## Next actions
-1. User merges the speaker-notes PR, records the walkthrough (`docs/02_design/speaker_notes.md`), submits to the SME.
+1. User creates the release with the video, merges the video-link PR, sends the link to the SME.
 2. Apply any SME feedback to the design (channel mapping is the most likely change: `config/media.yaml`).
 3. Step 3: build stages 3.1–3.11 (design doc section 5), one commit per stage, on a new branch → PR. Start: 3.1 `ingest.py`.
 
@@ -23,6 +22,7 @@ before Step 3 starts.
 - The example snippet uses media ID `v08dlrgr7v`; in-scope IDs are `8hunphufxp` and `9k4tbcdfg0`.
 
 ## Environment gotchas
+- Video (local, ignored): `docs/02_design/DesignExplinationVideo.mov` in the main folder. Creating public releases is blocked for Claude; the user runs `gh release create`.
 - Export diagrams: `/Applications/draw.io.app/Contents/MacOS/draw.io -x -f png -s 2 -b 20 -o <out>.png <in>.drawio`
 - Merged remote branches `worktree-step-1-plan-api-exploration`, `worktree-step-2-drawio-diagram` can be deleted (user only; blocked for Claude).
 - `.env` (token) lives in the main project folder only, not in worktrees; scripts read it from there.
