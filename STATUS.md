@@ -2,8 +2,9 @@
 Updated: 2026-11-03 (draw.io diagrams)
 
 ## Where we are
-Steps 1–2 done and merged (PR #1). Diagrams redrawn in draw.io on branch `worktree-step-2-drawio-diagram`
-(worktree `.claude/worktrees/step-2-drawio-diagram`), PR pending. Plan agreed: Steps 0–7 in CLAUDE.md.
+Steps 1–2 done and merged (PR #1, PR #2 draw.io diagrams). SME speaker notes on branch
+`worktree-step-2-sme-speaker-notes`, PR pending. User records the design walkthrough and submits to the SME
+before Step 3 starts.
 
 ## Done this session
 - Scaffold created and pushed to GitHub `main` (public repo PolatParhat/WistiaVideoAnalytics); commit 506cd47.
@@ -12,8 +13,9 @@ Steps 1–2 done and merged (PR #1). Diagrams redrawn in draw.io on branch `work
 - Requirements explained to the user; plan agreed; decisions logged (simulated 7-day run, user = SME, build-first-then-teach).
 
 ## Next actions
-1. User reviews the draw.io diagrams PR and merges.
-2. Step 3: build in stages 3.1–3.11 (design doc section 5), one commit per stage, on a new branch → PR.
+1. User merges the speaker-notes PR, records the walkthrough (`docs/02_design/speaker_notes.md`), submits to the SME.
+2. Apply any SME feedback to the design (channel mapping is the most likely change: `config/media.yaml`).
+3. Step 3: build stages 3.1–3.11 (design doc section 5), one commit per stage, on a new branch → PR. Start: 3.1 `ingest.py`.
 
 ## Open items
 - Step 2 choices made by the user (all recommended): Bearer, channel from config, fact grain + `fact_media_daily`,
@@ -22,10 +24,11 @@ Steps 1–2 done and merged (PR #1). Diagrams redrawn in draw.io on branch `work
 
 ## Environment gotchas
 - Export diagrams: `/Applications/draw.io.app/Contents/MacOS/draw.io -x -f png -s 2 -b 20 -o <out>.png <in>.drawio`
-- Old remote branch `worktree-step-1-plan-api-exploration` (merged) still on GitHub; deleting it needs the user.
+- Merged remote branches `worktree-step-1-plan-api-exploration`, `worktree-step-2-drawio-diagram` can be deleted (user only; blocked for Claude).
 - `.env` (token) lives in the main project folder only, not in worktrees; scripts read it from there.
 
 ## Key facts to keep straight
+- Simulation week 2026-03-17 → 23: events per day 8hunphufxp [0,1,1,3,1,3,2] = 11, 9k4tbcdfg0 [9,4,5,2,2,0,6] = 28.
 - Media IDs in scope: `8hunphufxp`, `9k4tbcdfg0`.
 - No dbt; AWS only; Python ingestion; PySpark transforms; GitHub Actions CI/CD.
 - FR8 = simulated 7-day backfill on the real AWS pipeline (not 7 calendar days).
