@@ -1,0 +1,11 @@
+[project]
+name = "wistia-video-analytics"
+version = "0.1.0"
+description = "Wistia Stats API -> AWS data pipeline (Python ingestion, PySpark transforms)"
+readme = "README.md"
+# Glue 5.0 runs Python 3.11 and Lambda runs 3.12, so the shared code must work on 3.11.
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.32",
+    "python-dotenv>=1.0",
+]
