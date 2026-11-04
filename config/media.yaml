@@ -1,0 +1,8 @@
+# Media in scope and their marketing channel.
+# Wistia has no channel field; this mapping was confirmed by the SME on 2026-11-04.
+# Changing a channel here is a config change only: the next transform run applies it.
+media:
+  - media_id: 9k4tbcdfg0
+    channel: Facebook
+  - media_id: 8hunphufxp
+    channel: YouTube

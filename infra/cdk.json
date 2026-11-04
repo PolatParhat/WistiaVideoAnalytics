@@ -1,0 +1,11 @@
+{
+  "app": "uv run --group infra python app.py",
+  "watch": {
+    "include": ["**"],
+    "exclude": ["cdk.out", "build", "**/__pycache__"]
+  },
+  "context": {
+    "@aws-cdk/aws-iam:minimizePolicies": true,
+    "@aws-cdk/core:target-partitions": ["aws"]
+  }
+}
