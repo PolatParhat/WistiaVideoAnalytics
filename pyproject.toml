@@ -22,6 +22,7 @@ packages = ["src/wistia"]
 
 [dependency-groups]
 dev = [
+    "pyspark==3.5.6",
     "pytest>=9.2.0",
     "responses>=0.26.3",
     "ruff>=0.17.3",
