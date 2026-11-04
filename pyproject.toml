@@ -29,6 +29,10 @@ dev = [
     "responses>=0.26.3",
     "ruff>=0.17.3",
 ]
+infra = [
+    "aws-cdk-lib>=2.275.0",
+    "constructs>=10.8.1",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
