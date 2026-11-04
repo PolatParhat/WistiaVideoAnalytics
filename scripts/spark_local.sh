@@ -11,7 +11,7 @@ PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 docker run --rm \
   -v "$PROJECT_DIR":/work \
   -w /work \
-  -e PYTHONPATH=/work/src \
+  -e PYTHONPATH=/work/src:/usr/share/aws/glue-pds/PyGlue.zip:/usr/lib/spark/python/lib/ \
   -e PIPELINE_ENV=local \
   --entrypoint spark-submit \
   "$IMAGE" \
