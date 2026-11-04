@@ -67,9 +67,7 @@ class WistiaClient:
                     raise WistiaApiError(f"{status} {reason} for {url}")
 
             if attempt == self.max_attempts:
-                raise WistiaApiError(
-                    f"giving up on {url} after {self.max_attempts} attempts ({status} {reason})"
-                )
+                raise WistiaApiError(f"giving up on {url} after {self.max_attempts} attempts ({status} {reason})")
             wait = self._backoff(attempt, response)
             log_event(
                 log,
