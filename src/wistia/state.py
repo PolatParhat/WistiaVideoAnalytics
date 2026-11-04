@@ -19,7 +19,10 @@ class LocalWatermarkStore:
         return date.fromisoformat(value) if value else None
 
     def set(self, media_id, loaded_date):
-        """Advance the watermark. Never moves it backwards (re-running an old day must not undo later loads)."""
+        """Advance the watermark. Never moves it backwards.
+
+        Re-running an old day must not undo later loads.
+        """
         marks = self._read_all()
         current = marks.get(media_id)
         if current and current >= loaded_date.isoformat():

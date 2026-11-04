@@ -19,8 +19,15 @@ class WistiaApiError(RuntimeError):
 
 
 class WistiaClient:
-    def __init__(self, token, base_url=BASE_URL, max_attempts=MAX_ATTEMPTS, per_page=PER_PAGE,
-                 session=None, sleep=time.sleep):
+    def __init__(
+        self,
+        token,
+        base_url=BASE_URL,
+        max_attempts=MAX_ATTEMPTS,
+        per_page=PER_PAGE,
+        session=None,
+        sleep=time.sleep,
+    ):
         self.base_url = base_url
         self.max_attempts = max_attempts
         self.per_page = per_page
@@ -44,8 +51,13 @@ class WistiaClient:
                 status, reason = None, type(error).__name__
             else:
                 status, reason = response.status_code, response.reason
-                fields = {"url": url, "params": params, "status": status, "attempt": attempt,
-                          "ms": round((time.monotonic() - started) * 1000)}
+                fields = {
+                    "url": url,
+                    "params": params,
+                    "status": status,
+                    "attempt": attempt,
+                    "ms": round((time.monotonic() - started) * 1000),
+                }
                 if status == 200:
                     log_event(log, "api call", **fields)
                     return response.json()
@@ -56,10 +68,19 @@ class WistiaClient:
 
             if attempt == self.max_attempts:
                 raise WistiaApiError(
-                    f"giving up on {url} after {self.max_attempts} attempts ({status} {reason})")
+                    f"giving up on {url} after {self.max_attempts} attempts ({status} {reason})"
+                )
             wait = self._backoff(attempt, response)
-            log_event(log, "retrying", logging.WARNING, url=url, status=status, reason=reason,
-                      attempt=attempt, wait_s=round(wait, 1))
+            log_event(
+                log,
+                "retrying",
+                logging.WARNING,
+                url=url,
+                status=status,
+                reason=reason,
+                attempt=attempt,
+                wait_s=round(wait, 1),
+            )
             self._sleep(wait)
 
     @staticmethod

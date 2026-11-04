@@ -6,8 +6,9 @@ from pathlib import Path
 
 def raw_key(endpoint, media_id, run_date, run_id, page):
     """Path of one raw file, Hive-style partitions so Spark/Athena can filter on them."""
-    return (f"raw/wistia/{endpoint}/media_id={media_id}/run_date={run_date}"
-            f"/run_id={run_id}/page_{page:04d}.json")
+    return (
+        f"raw/wistia/{endpoint}/media_id={media_id}/run_date={run_date}/run_id={run_id}/page_{page:04d}.json"
+    )
 
 
 class LocalStorage:

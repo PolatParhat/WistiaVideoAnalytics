@@ -7,7 +7,7 @@ Run:  uv run python jobs/ingest.py --run-date 2026-03-17
 
 import argparse
 import os
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 
 from dotenv import find_dotenv, load_dotenv
 
@@ -19,10 +19,14 @@ from wistia.storage import LocalStorage
 
 
 def parse_args(argv=None):
-    yesterday = datetime.now(timezone.utc).date() - timedelta(days=1)
+    yesterday = datetime.now(UTC).date() - timedelta(days=1)
     parser = argparse.ArgumentParser(description="Pull Wistia stats into lake/raw")
-    parser.add_argument("--run-date", type=date.fromisoformat, default=yesterday,
-                        help="day this run is for, YYYY-MM-DD (default: yesterday UTC)")
+    parser.add_argument(
+        "--run-date",
+        type=date.fromisoformat,
+        default=yesterday,
+        help="day this run is for, YYYY-MM-DD (default: yesterday UTC)",
+    )
     parser.add_argument("--media", nargs="+", help="media ids (default: all in config/media.yaml)")
     parser.add_argument("--lake", default="lake", help="local lake folder (default: lake)")
     return parser.parse_args(argv)
