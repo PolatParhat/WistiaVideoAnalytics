@@ -29,6 +29,7 @@ Newest entries are at the end of each table/log.
 | 2026-11-03 | Diagrams drawn in draw.io (`.drawio` source + 2× PNG export in `docs/02_design/`), replacing Mermaid | User: Mermaid output quality too low for the deliverable; draw.io gives AWS icons and exact layout |
 | 2026-11-03 | Walkthrough videos are not put on GitHub (not committed, not as release assets); shared with the SME directly. `*.mov`/`*.mp4` stay ignored | User decision: recordings are review material, not part of the code deliverable; keeps the public repo free of large binaries and of anything accidentally shown on screen |
 | 2026-11-03 | Design submitted to the external SME; Step 3 waits for their approval | User decision: get real sign-off before building (the earlier 'user acts as SME' approval stands as the internal approval) |
+| 2026-11-04 | SME approved the design and the 4 points: play_rate in `fact_media_daily`; channel `9k4tbcdfg0` = Facebook, `8hunphufxp` = YouTube; Bearer auth; simulated 7-day run (2026-03-17 → 23) | Reported by the user. Step 3 build starts |
 
 ## Change log
 
@@ -39,3 +40,4 @@ Newest entries are at the end of each table/log.
 - 2026-11-03: PR #1 (Steps 1–2) merged. Architecture and data model redrawn in draw.io.
 - 2026-11-03: Design walkthrough recorded by the user (kept local, not on GitHub); submitted to the SME.
 - 2026-11-03: Session handoff; waiting for SME approval before Step 3.
+- 2026-11-04: SME approved the design; Step 3 build started on branch `worktree-step-3-build`.
