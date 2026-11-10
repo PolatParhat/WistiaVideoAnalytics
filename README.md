@@ -49,9 +49,7 @@ which differs slightly; see the data-quality warning in the evidence.)
 | 0 | [Requirements (redacted)](docs/00_requirements/requirements.md) |
 | 1 | [API exploration: endpoints, volume, findings](docs/01_api_exploration/README.md) |
 | 2 | [Architecture and data model](docs/02_design/README.md) (approved by the SME 2026-11-04) |
-| 2 | [Design walkthrough speaker notes (SME recording)](docs/02_design/speaker_notes.md) |
 | 4–5 | [Deployment and the simulated 7-day production run: evidence and results](docs/05_production_run/README.md) |
-| 7 | [Final walkthrough speaker notes](docs/07_walkthrough/speaker_notes.md) |
 | — | [Decisions and change log](docs/decisions.md) |
 
 ## Repository layout

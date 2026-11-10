@@ -1,7 +1,7 @@
 # Step 2: Architecture and data model
 
 Status: **approved 2026-11-03** by the user; **approved by the SME 2026-11-04**, including the 4 points in section 3 and the
-speaker notes (play rate in `fact_media_daily`, channel mapping, Bearer auth, simulated 7-day run).
+design walkthrough (play rate in `fact_media_daily`, channel mapping, Bearer auth, simulated 7-day run).
 Inputs: [requirements](../00_requirements/requirements.md), [Step 1 API findings](../01_api_exploration/README.md).
 
 ## 1. Architecture
