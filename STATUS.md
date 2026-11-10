@@ -4,8 +4,8 @@ Updated: 2026-11-10 (Steps 4–5 done)
 ## Where we are
 Steps 0–5 done. The pipeline is **deployed in AWS (us-east-1) and still running/deployed** (stack `WistiaPipeline`).
 The simulated 7-day production run (FR8) passed: 8 Step Functions runs (2026-03-17 → 23 + rerun of 03-20) all
-`SUCCEEDED`, 39 events, 0 duplicates. Evidence: `docs/05_production_run/README.md`. Next: optional GitHub deploy
-setup (CD for FR9), optional dashboard (Step 6), then Step 7 (README, video, teardown), then the tutorial book.
+`SUCCEEDED`, 39 events, 0 duplicates. Evidence: `docs/05_production_run/README.md`. Steps 4.5 (GitHub deploy)
+and 6 (dashboard) are deferred to the tutorial rebuild. Next: Step 7 (README done → video → teardown), then the book.
 
 ## Done this session (2026-11-10)
 - PR #5 (Step 3 build) merged (fd8ef0f).
@@ -18,15 +18,14 @@ setup (CD for FR9), optional dashboard (Step 6), then Step 7 (README, video, tea
   only DQ failures are the known `reconcile:plays_vs_events` warnings. Matches the local run and Step 1 exactly.
 
 ## Next actions
-1. User merges this PR, then `cd ~/Documents/DataEngineerBootcamp/Projects/WistiaVideoAnalytics && git pull`.
+1. User merges the Step 7 README PR, then `cd ~/Documents/DataEngineerBootcamp/Projects/WistiaVideoAnalytics && git pull`.
 2. User confirms the SNS email subscription (still `PendingConfirmation` on 2026-11-10).
-3. Optional (shows CD for FR9): GitHub deploy setup: `cd infra && cdk deploy WistiaGithubOidc` → repo secret
-   `AWS_DEPLOY_ROLE_ARN` = the `DeployRoleArn` output → environment `production` → run the Deploy workflow once.
-4. Step 6 (optional FR11): dashboard on the gold tables (report queries already in `sql/evidence.sql`).
-5. Step 7: README results section + link to `docs/05_production_run/`, walkthrough video (local only), then teardown
-   (user): `cd infra && cdk destroy WistiaPipeline` and delete the secret (README "Teardown").
-6. FINAL step, only after 7: the local-only tutorial book (every tool, data-engineering perspective, examples +
-   practice, project walkthrough, rebuild guide). Spec in Claude's project memory `final-step-tutorial-book`.
+3. Step 7 video: user records the final walkthrough **while the stack is still deployed** (console: Step Functions
+   history, S3 raw/, Athena evidence). Video stays local, never on GitHub.
+4. Step 7 teardown (user, after the video): `cd infra && cdk destroy WistiaPipeline`, then delete the secret
+   (README "Teardown"); optionally also the `CDKToolkit` bootstrap stack.
+5. FINAL: the local-only tutorial book; its rebuild guide includes Step 4.5 (GitHub OIDC deploy) and Step 6
+   (dashboard), both skipped in this project. Spec in Claude's project memory `final-step-tutorial-book`.
 
 ## Open items
 - AWS stack is live: cost ~$0 idle + $0.40/month for the secret until teardown.

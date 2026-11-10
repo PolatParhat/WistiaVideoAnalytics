@@ -32,8 +32,8 @@ State: STATUS.md · History: docs/decisions.md (read it before re-deciding anyth
 | 3 | Build: Python ingestion, PySpark transforms, DQ checks, tests, GitHub Actions CI/CD, AWS IaC | Done (stages 3.1–3.11; PR from `worktree-step-3-build`) |
 | 4 | Deploy to AWS (user runs the commands) | Done 2026-11-10 (stack `WistiaPipeline`, us-east-1) |
 | 5 | Simulated 7-day production run: backfill script, 7 runs with `run_date`, run-log evidence | Done 2026-11-10 (`docs/05_production_run/`) |
-| 6 | Dashboard (optional FR11) | Next |
-| 7 | README, walkthrough video, AWS teardown; then hand-typing tutorial in a separate practice folder | Not started |
+| 6 | Dashboard (optional FR11) | Skipped; done in the tutorial rebuild (decision 2026-11-10) |
+| 7 | README, walkthrough video, AWS teardown; then hand-typing tutorial in a separate practice folder | Next (README done) |
 
 Timeline: finish in a couple of days. After the design is approved Claude builds everything; then
 explains it so the user retypes it by hand (separate practice folder, never the production repo).

@@ -10,6 +10,38 @@ Facebook and YouTube.
 Glue 5.1 (PySpark: raw → silver → gold Iceberg tables, data-quality checks) → watermark advanced in DynamoDB →
 query with Athena. Infrastructure is AWS CDK (Python); CI/CD is GitHub Actions.
 
+## Results
+
+Deployed to AWS (us-east-1) and run as a simulated 7-day production week (2026-03-17 → 2026-03-23, plus a rerun of
+2026-03-20): **8 of 8 runs succeeded, 39 events loaded, 0 duplicated keys after the rerun**, totals identical to the
+API exploration. Full evidence: [docs/05_production_run](docs/05_production_run/README.md).
+
+| Video | Channel | Plays | Visitors | Loads → plays (play rate) | Avg. watched |
+|---|---|---|---|---|---|
+| The Gap Method | Facebook | 28 | 24 | 53 → 26 (≈ 49%) | 30% |
+| rivas_-_de_testimonial (1080p) (1) | YouTube | 11 | 10 | 1,620 → 11 (≈ 0.7%) | 23% |
+
+The YouTube video is loaded 150–320 times a day but almost never played: the page it is embedded on, not the video,
+is the first thing to look at. (Plays per video count events; the play-rate column uses Wistia's daily `play_count`,
+which differs slightly; see the data-quality warning in the evidence.)
+
+## Requirements coverage
+
+| ID | Requirement | How it is met |
+|---|---|---|
+| FR1 | Own architecture, approved by the SME | [Design](docs/02_design/README.md), approved 2026-11-04 |
+| FR2 | Token authentication | Bearer token (Wistia's documented method; Basic also tested, see Step 1). Token in Secrets Manager, never in code |
+| FR3 | Media metadata | `/medias/{id}.json` → `dim_media` (title, ids, url, channel, created/updated) |
+| FR4 | Engagement metrics | `by_date` → `fact_media_daily` (loads, plays, play rate, hours); events → `fact_media_engagement` |
+| FR5 | Visitor-level data | `/stats/events` → `dim_visitor` (IP, location, browser) and per-visitor engagement |
+| FR6 | Pagination | Events are pulled page by page until Wistia returns an empty page (`src/wistia/api.py`) |
+| FR7 | Incremental ingestion | Date window per media from a DynamoDB watermark, with a 1-day lookback for late events; `MERGE` upserts. Events have no `updated_at`, so the window uses the event date (`received_at`); media metadata (`updated`) is re-read every run |
+| FR8 | 7 consecutive production days | **Simulated**: the deployed pipeline ran once per `run_date` for 7 consecutive days (decision 2026-11-03); the daily schedule exists but is disabled |
+| FR9 | CI/CD with GitHub Actions | CI on every PR (lint, 50 unit tests, CDK template tests, `cdk synth`); manual Deploy workflow with OIDC (built; the deployment itself was run from the CLI) |
+| FR10 | Structured data model | Iceberg star schema in the Glue Data Catalog: 2 dimensions, 2 facts, plus ops tables |
+| FR11 | Reports / dashboard (optional) | Report queries in `sql/evidence.sql`, results in [docs/05_production_run](docs/05_production_run/README.md); no dashboard |
+| FR12 | Repo with docs, code, CI/CD, instructions | This repository |
+
 ## Documents
 
 | Step | Document |
