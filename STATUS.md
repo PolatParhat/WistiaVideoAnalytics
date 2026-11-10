@@ -1,42 +1,48 @@
 # Status: Wistia Video Analytics Pipeline
-Updated: 2026-11-04 (end of Step 3 build)
+Updated: 2026-11-10 (Steps 4–5 done)
 
 ## Where we are
-Steps 0–3 done. The SME approved the design and its 4 points on 2026-11-04. Step 3 is built on branch
-`worktree-step-3-build` in 11 stages (one commit each) and opened as a PR. Everything is verified locally,
-**nothing is deployed to AWS yet**. Next: the user reviews and merges the PR, then runs Step 4 (deploy).
+Steps 0–5 done. The pipeline is **deployed in AWS (us-east-1) and still running/deployed** (stack `WistiaPipeline`).
+The simulated 7-day production run (FR8) passed: 8 Step Functions runs (2026-03-17 → 23 + rerun of 03-20) all
+`SUCCEEDED`, 39 events, 0 duplicates. Evidence: `docs/05_production_run/README.md`. Next: optional GitHub deploy
+setup (CD for FR9), optional dashboard (Step 6), then Step 7 (README, video, teardown), then the tutorial book.
 
-## Done this session
-- SME approval recorded (a6520de).
-- 3.1 single-file ingest, one API call (37b8a37) → 3.2 all endpoints, pagination, retries, JSON logs, raw files
-  (4d4feaf) → 3.3 run_date, incremental window with 1-day lookback, local watermark (783362d).
-- 3.4 refactor into library `src/wistia/` (6bfebbc) → 3.5 unit tests + ruff (d096193).
-- 3.6 single PySpark transform raw → silver → gold, Iceberg MERGE, Glue 5.1 Docker runner (2f3cf59)
-  → 3.7 pure transform functions + DQ checks in `src/wistia/transform/`, PySpark unit tests (f08d363).
-- 3.8 AWS adapters (S3 write-once, DynamoDB forward-only watermark, Secrets Manager), Lambda handlers, Glue entry
-  point (2ecc647; Glue entry tested in the Glue image).
-- 3.9 CDK stack (78553d3) → 3.10 GitHub Actions CI + manual OIDC deploy (183f436) → 3.11 `simulate_week.py`,
-  Athena evidence queries (8a31b2c).
-- Verified: 50 unit tests + 6 CDK template tests pass; `cdk synth` OK; local simulated week = 39 events
-  (new per day 9,5,6,5,3,3,8), rerun of 2026-03-20 adds 0, duplicate check = 0 in every table.
+## Done this session (2026-11-10)
+- PR #5 (Step 3 build) merged (fd8ef0f).
+- Code walkthrough with the user in the VS Code debugger (ingestion, transform, AWS adapters). Debug configs live in
+  `.claude/worktrees/step-3-build/.vscode/launch.json` (local only, not committed).
+- Step 4 (user ran): `cdk bootstrap aws://<account-id>/us-east-1` → secret `wistia/api-token` → `cdk deploy
+  WistiaPipeline` (CREATE_COMPLETE, ~3 min) → smoke test = day 1 (`simulate_week.py --start 2026-03-17 --days 1`).
+- Step 5 (user ran): `simulate_week.py --start 2026-03-18 --days 6 --rerun 2026-03-20`; `athena_query.py
+  sql/evidence.sql`. events_new per run 9,5,6,5,3,3,8 and 0 for the rerun; watermarks stay at 2026-03-23;
+  only DQ failures are the known `reconcile:plays_vs_events` warnings. Matches the local run and Step 1 exactly.
 
 ## Next actions
-1. User reviews the Step 3 PR, waits for CI to go green, merges it, then in the main folder:
-   `cd ~/Documents/DataEngineerBootcamp/Projects/WistiaVideoAnalytics && git pull`.
-2. Step 4 deploy (user runs; README "Deploy to AWS"): `aws sts get-caller-identity` → `cdk bootstrap` →
-   create secret `wistia/api-token` → `cd infra && cdk deploy WistiaPipeline -c alert_email=...` → confirm SNS email.
-3. Step 5: `uv run python scripts/simulate_week.py --start 2026-03-17 --days 7 --rerun 2026-03-20`, then
-   `uv run python scripts/athena_query.py sql/evidence.sql`; compare with the local numbers above.
-4. Optional: GitHub deploy setup (`cdk deploy WistiaGithubOidc`, secret `AWS_DEPLOY_ROLE_ARN`, environment `production`).
+1. User merges this PR, then `cd ~/Documents/DataEngineerBootcamp/Projects/WistiaVideoAnalytics && git pull`.
+2. User confirms the SNS email subscription (still `PendingConfirmation` on 2026-11-10).
+3. Optional (shows CD for FR9): GitHub deploy setup: `cd infra && cdk deploy WistiaGithubOidc` → repo secret
+   `AWS_DEPLOY_ROLE_ARN` = the `DeployRoleArn` output → environment `production` → run the Deploy workflow once.
+4. Step 6 (optional FR11): dashboard on the gold tables (report queries already in `sql/evidence.sql`).
+5. Step 7: README results section + link to `docs/05_production_run/`, walkthrough video (local only), then teardown
+   (user): `cd infra && cdk destroy WistiaPipeline` and delete the secret (README "Teardown").
+6. FINAL step, only after 7: the local-only tutorial book (every tool, data-engineering perspective, examples +
+   practice, project walkthrough, rebuild guide). Spec in Claude's project memory `final-step-tutorial-book`.
 
 ## Open items
-- Not yet verified in real AWS: Glue 5.1 + Iceberg Glue catalog, Athena reading the tables (column `date` in
-  queries), the S3 `IfNoneMatch` write, the Step Functions flow. First deploy + first run will show it.
+- AWS stack is live: cost ~$0 idle + $0.40/month for the secret until teardown.
+- SNS alert subscription not yet confirmed (see Next actions 2).
 - A DQ failure in Glue is retried twice by Step Functions (same result); acceptable, costs ~$0.06.
 - Merged remote branches that can be deleted (user only): `worktree-step-1-plan-api-exploration`,
-  `worktree-step-2-drawio-diagram`, `worktree-step-2-sme-speaker-notes`, `worktree-step-2-video-link`.
+  `worktree-step-2-drawio-diagram`, `worktree-step-2-sme-speaker-notes`, `worktree-step-2-video-link`,
+  `worktree-step-3-build`.
 
 ## Environment gotchas
+- AWS CLI default region on the Mac is **us-west-1**; the project is in **us-east-1**: always pass `--region us-east-1`
+  and switch the console to N. Virginia.
+- Deployed names: bucket `wistiapipeline-databuckete3889a50-dlqzxfwnylfh`, watermark table
+  `WistiaPipeline-WatermarksC54B9051-O9YJKSI39TD7` (both change if the stack is recreated).
+- Debug the PySpark transform in VS Code without Docker: venv Python + env `TZ=UTC` and
+  `PYSPARK_SUBMIT_ARGS="--packages org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.10.0 pyspark-shell"`.
 - The SessionStart hook reads STATUS.md from the **main folder**: after merging a PR, run `git pull` there.
 - `.env` (token) lives in the main project folder only; `jobs/ingest.py` finds it by walking up from the worktree.
 - PySpark runs locally only through `scripts/spark_local.sh` (Glue 5.1 image, arm64). It keeps the image's

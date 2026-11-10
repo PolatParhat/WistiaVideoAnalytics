@@ -41,6 +41,8 @@ Newest entries are at the end of each table/log.
 | 2026-11-04 | Bucket, table and log groups use `RemovalPolicy.DESTROY` (+ auto-delete objects) | Learning project: `cdk destroy` in Step 7 must leave nothing that costs money |
 | 2026-11-04 | GitHub deploy via OIDC role (`WistiaGithubOidc` stack) limited to this repo's `production` environment and to assuming the CDK bootstrap roles | No long-lived AWS keys in GitHub; least privilege |
 | 2026-11-04 | Daily schedule loads **yesterday** (`scheduled_time` − 1 day); manual/simulated runs pass `run_date` | Today's data is incomplete at 02:00 UTC |
+| 2026-11-10 | Smoke test = day 1 of the simulated week (2026-03-17); days 2–7 + rerun in a second `simulate_week.py` call | The first real run is not thrown away; `ops.pipeline_runs` holds exactly the 7 days + the rerun |
+| 2026-11-10 | Tutorial "book" (every tool, data-engineering perspective, examples + practice, project walkthrough, rebuild guide) is the **final** step, kept local only (not in Git) | User decision: finish the project first, learn from the book afterwards |
 
 ## Change log
 
@@ -54,3 +56,6 @@ Newest entries are at the end of each table/log.
 - 2026-11-04: SME approved the design; Step 3 build started on branch `worktree-step-3-build`.
 - 2026-11-04: Step 3 built in 11 stages (3.1–3.11), one commit each. Local simulated week (2026-03-17 → 23 + rerun of
   2026-03-20) reproduces Step 1: 39 events (8hunphufxp 11, 9k4tbcdfg0 28), 0 duplicated keys after the rerun.
+- 2026-11-10: PR #5 merged. Step 4: CDK bootstrap, secret, `cdk deploy WistiaPipeline` (us-east-1), smoke test passed.
+- 2026-11-10: Step 5: simulated week on AWS, 8 runs SUCCEEDED, 39 events, 0 duplicates after the rerun of 2026-03-20;
+  evidence in docs/05_production_run/README.md.
