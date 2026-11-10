@@ -45,6 +45,7 @@ Newest entries are at the end of each table/log.
 | 2026-11-10 | Tutorial "book" (every tool, data-engineering perspective, examples + practice, project walkthrough, rebuild guide) is the **final** step, kept local only (not in Git) | User decision: finish the project first, learn from the book afterwards |
 | 2026-11-10 | GitHub Actions deploy (OIDC role, `AWS_DEPLOY_ROLE_ARN`, `production` environment) not set up in this project; done during the rebuild from the tutorial | User decision, to finish faster. The Deploy workflow and OIDC stack are built and synthesized; the real deployment ran from the CLI |
 | 2026-11-10 | No dashboard (optional FR11); report queries + results in docs/05_production_run instead; dashboard built during the rebuild | User decision, to finish faster |
+| 2026-11-10 | Speaker notes (design and final walkthrough) kept local only, removed from Git and git-ignored | User decision: they are recording scripts, not project documentation |
 
 ## Change log
 
@@ -62,3 +63,4 @@ Newest entries are at the end of each table/log.
 - 2026-11-10: Step 5: simulated week on AWS, 8 runs SUCCEEDED, 39 events, 0 duplicates after the rerun of 2026-03-20;
   evidence in docs/05_production_run/README.md.
 - 2026-11-10: README results + requirements coverage (FR1–FR12) added; Step 7 started.
+- 2026-11-10: Walkthrough speaker notes written (PRs #8–#10), then removed from the repo; kept locally.

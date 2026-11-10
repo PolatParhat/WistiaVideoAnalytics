@@ -22,3 +22,7 @@ lake/
 # Infra build output
 infra/cdk.out/
 infra/build/
+
+# Speaker notes for the recordings (local only, never in Git)
+docs/02_design/speaker_notes.md
+docs/07_walkthrough/
