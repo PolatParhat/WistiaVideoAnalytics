@@ -1,234 +1,194 @@
 # Speaker notes: final project walkthrough
 
-Recording length: about **15 minutes**. Read the lines in quotes in your own words; the **[Show]** lines say what is on
-screen. Record **before the teardown**: sections 6–8 show the live AWS pipeline.
-Numbers come from `docs/05_production_run/README.md` and the README.
+About 15 minutes. Read it like you're talking to a colleague; say it in your own words. The lines in *italics* tell
+you what to click; everything else is what you say. Record this **before** tearing the stack down.
 
 ## Before you record
 
-**Browser tabs, in this order** (GitHub on branch `main`, AWS console in region **N. Virginia / us-east-1**):
+Open these tabs in order (AWS console in **N. Virginia / us-east-1**):
 
-1. GitHub repo front page (README)
-2. `docs/02_design/architecture.png` (zoom so the diagram fills the screen)
-3. `docs/02_design/data_model.png`
-4. GitHub → the repo's **code** view of `src/wistia/` (folder list)
-5. GitHub → **Actions** tab (CI runs, all green) and **Pull requests → Closed** (PRs #1–#7)
-6. AWS → **CloudFormation → Stacks → WistiaPipeline → Resources**
-7. AWS → **Step Functions → State machines → wistia-pipeline** (Executions list)
-8. AWS → **S3 → wistiapipeline-databucket… → raw/wistia/**
-9. AWS → **DynamoDB → Tables → WistiaPipeline-Watermarks… → Explore table items**
-10. AWS → **AWS Glue → ETL jobs → wistia-transform → Runs**
-11. AWS → **CloudWatch → Logs Insights** (log group `WistiaPipeline-IngestFunctionLogs…`, query below pasted in)
-12. AWS → **Athena → Query editor**, workgroup **wistia** selected (top right), the queries below ready in tabs
-13. `docs/05_production_run/README.md`
-14. `docs/decisions.md`
+1. GitHub: the README
+2. GitHub: `docs/02_design/architecture.png`
+3. GitHub: `docs/02_design/data_model.png`
+4. GitHub: the `src/wistia/` folder
+5. GitHub: the Actions tab
+6. AWS: CloudFormation → WistiaPipeline → Resources
+7. AWS: Step Functions → wistia-pipeline
+8. AWS: S3 → the wistiapipeline-databucket… bucket → `raw/wistia/`
+9. AWS: DynamoDB → the Watermarks table → Explore items
+10. AWS: CloudWatch → Logs Insights, log group `WistiaPipeline-IngestFunctionLogs…`, with this query pasted in:
+    ```
+    fields @timestamp, msg, media_id, window_start, window_end, events
+    | filter msg = "media done"
+    | sort @timestamp asc
+    ```
+11. AWS: Athena → Query editor, workgroup **wistia**, with these three queries in three tabs:
+    ```sql
+    SELECT run_date, window_start, window_end, status, events_read, events_new, silver_events_total
+    FROM wistia_ops.pipeline_runs ORDER BY started_at;
+    ```
+    ```sql
+    SELECT COUNT(*) AS duplicated_keys FROM (
+      SELECT event_key, visitor_key, received_at FROM wistia_silver.events
+      GROUP BY event_key, visitor_key, received_at HAVING COUNT(*) > 1);
+    ```
+    ```sql
+    SELECT m.title, m.channel, SUM(f.play_count) AS plays, COUNT(DISTINCT f.visitor_id) AS visitors,
+           ROUND(AVG(f.watched_percent), 3) AS avg_watched
+    FROM wistia_gold.fact_media_engagement f JOIN wistia_gold.dim_media m ON m.media_id = f.media_id
+    GROUP BY m.title, m.channel ORDER BY plays DESC;
+    ```
+12. GitHub: `docs/decisions.md`
 
-**Run every Athena query and the Logs Insights query once before recording**, so they are fast and you know the output.
+Run the queries once before you hit record so they're quick.
 
-**Never show:**
-- `.env`, the original `.docx`, or the Secrets Manager secret's value (don't click "Retrieve secret value").
-- **Personal data:** don't `SELECT *` from `wistia_silver.events` or `wistia_gold.dim_visitor`, and don't open
-  raw files under `raw/wistia/events/` (they contain visitor IP addresses and cities). Open a `medias/` file instead.
-- The AWS account number in the console's top-right menu: keep that menu closed.
-
-Close notifications; zoom the browser so text is readable; practice once with a timer.
-
-### Queries to have ready
-
-CloudWatch Logs Insights (ingest log group, time range "Last 1 day" or a custom range covering the runs):
-
-```
-fields @timestamp, msg, media_id, window_start, window_end, events
-| filter msg = "media done"
-| sort @timestamp asc
-```
-
-Athena (workgroup `wistia`), one per editor tab:
-
-```sql
--- A. The simulated week
-SELECT run_date, window_start, window_end, status, events_read, events_new, silver_events_total, dq_failed_critical
-FROM wistia_ops.pipeline_runs ORDER BY started_at;
-
--- B. No duplicates after the rerun
-SELECT COUNT(*) AS duplicated_keys FROM (
-  SELECT event_key, visitor_key, received_at FROM wistia_silver.events
-  GROUP BY event_key, visitor_key, received_at HAVING COUNT(*) > 1);
-
--- C. Daily engagement per channel
-SELECT m.channel, f.date, f.load_count, f.play_count, f.play_rate, f.unique_visitors
-FROM wistia_gold.fact_media_daily f JOIN wistia_gold.dim_media m ON m.media_id = f.media_id
-ORDER BY m.channel, f.date;
-
--- D. Totals per video
-SELECT m.title, m.channel, SUM(f.play_count) AS plays, COUNT(DISTINCT f.visitor_id) AS visitors,
-       ROUND(AVG(f.watched_percent), 3) AS avg_watched_percent
-FROM wistia_gold.fact_media_engagement f JOIN wistia_gold.dim_media m ON m.media_id = f.media_id
-GROUP BY m.title, m.channel ORDER BY plays DESC;
-```
+**Don't show:** the `.env` file, the secret's value, your AWS account number (top-right menu), or anything with
+visitor IP addresses. That means no `SELECT *` on the events or visitor tables, and don't open files under
+`raw/wistia/events/`.
 
 ---
 
-## 1. Introduction (0:00–0:45)
+## The script
 
-[Show] Tab 1, README.
+*README on screen.*
 
-"Hi, I'm Polat. This is the finished Wistia Video Analytics pipeline. The marketing team promotes two videos on
-Facebook and YouTube and wants to know how they perform: plays, play rate, watch time, and who is watching.
+Hi, I'm Polat, and this is my Wistia video analytics pipeline. The idea is simple. A marketing team has two videos on
+Wistia, one they push on Facebook and one on YouTube, and they want to know how those videos are doing: how many
+people play them, how much they watch, and who's watching. So I built a pipeline that pulls that data from Wistia's
+API every day, cleans it up, and puts it into tables they can query. It's all on AWS, it's deployed right now, and
+I already ran it through a full week of data, so I'll show you the real thing.
 
-The pipeline pulls that data daily from the Wistia Stats API with Python, transforms it with PySpark into a star
-schema, and runs entirely on AWS. It's deployed, it ran a simulated production week, and I'll show it live.
+Let me start with how it fits together.
 
-I'll cover the architecture, the code, CI/CD, the live pipeline in AWS, the results, and the decisions I made."
+*Switch to the architecture diagram.*
 
-## 2. Architecture (0:45–2:30)
+Every run starts here, with a schedule. It would kick things off at 2 AM every night, but I've left it switched off,
+and I'll explain why in a minute. When a run starts, Step Functions takes over. Think of it as the conductor: it
+runs three steps in order, and if one of them fails it retries it.
 
-[Show] Tab 2, architecture diagram.
+The first step is a small Python function in Lambda. It gets the Wistia token from Secrets Manager, so the token is
+never in the code. Then it checks DynamoDB to see which day we loaded last, works out which dates to ask for, and
+calls the Wistia API. It goes through every page of results, and it backs off and tries again if Wistia is busy.
+Whatever comes back gets saved to S3 exactly as it arrived. I never change that raw data, so if something goes wrong
+later I can always rebuild from it.
 
-"One daily run goes like this:
+The second step is a Glue job running PySpark. It reads just the files that this run saved, cleans them up, and
+builds the final tables. It also runs data quality checks, so if something looks wrong, the run fails instead of
+loading bad data.
 
-- An EventBridge schedule would start it at 2 AM UTC. It's deployed **disabled**, because the 7-day requirement was
-  met by a simulated week, which I'll show.
-- Step Functions is the orchestrator. It runs three steps in order and retries each one.
-- Step one, a Python Lambda, reads the Wistia token from Secrets Manager, works out which dates to pull from a
-  watermark in DynamoDB, calls the API with pagination and retries, and writes the responses unchanged to S3, in a
-  folder per run.
-- Step two, a Glue job running PySpark, reads exactly that run's files, builds clean silver tables and the gold star
-  schema as Apache Iceberg tables, and runs data-quality checks.
-- Step three moves the watermark forward, **only** if the transform and the checks passed. If anything fails, the
-  watermark stays, and the next run picks up the missed days automatically. A failed run also triggers a CloudWatch
-  alarm that emails me.
-- Athena queries the tables with SQL.
+And only if all of that worked does the third step move the "last loaded day" forward in DynamoDB. That's the
+important part. If a run fails, the bookmark stays where it was, so the next run just picks up the missed days
+automatically. And if a run does fail, an alarm emails me.
 
-Everything is serverless, defined in code with AWS CDK, and the simulated week cost well under a dollar."
+At the end, the marketing team can query everything with plain SQL in Athena. The whole thing is defined in code
+with AWS CDK, and running the full test week cost well under a dollar.
 
-## 3. Data model (2:30–3:45)
+*Switch to the data model.*
 
-[Show] Tab 3, data model.
+The data moves through three layers. Raw is the API responses, untouched. Silver is the same data, cleaned and with
+duplicates removed. Gold is what people actually query: a star schema. There's a video table with the title and the
+channel, a visitor table with where people are watching from, and two fact tables. One has engagement per video, per
+visitor, per day: how many plays, how much they watched. The other has daily totals per video, including play rate.
 
-"Three layers. Raw is the API JSON as received, never changed, so any day can be reprocessed without calling Wistia
-again. Silver is typed and deduplicated. Gold is the star schema.
+Two things I learned from exploring the API shaped this. First, Wistia doesn't have a "channel" field anywhere, so
+which video is Facebook and which is YouTube comes from a small config file, and the expert reviewing this confirmed
+that mapping. Second, Wistia's event ID isn't actually unique. Two different views can share the same ID. So I
+identify each event by the ID, the visitor, and the time together. If I'd trusted the ID alone, I would've silently
+lost real data.
 
-- `dim_media`: one row per video, including the channel. Wistia has no channel field, so it comes from a config file;
-  the SME confirmed Facebook for 'The Gap Method' and YouTube for the testimonial.
-- `dim_visitor`: one row per visitor, built from the events, because Wistia's visitors endpoint can't be filtered by
-  video and has no location.
-- `fact_media_engagement`: per video, visitor and day: plays, watch time, percent watched, traffic source.
-- `fact_media_daily`: per video and day: loads, plays and play rate. Play rate lives here because Wistia only
-  reports loads per video per day, not per visitor.
+Every table is loaded with a MERGE. If a row is already there it gets updated, and if it's new it gets added. That
+means I can rerun any day as many times as I want and never get duplicates. I'll prove that in a minute.
 
-One important finding from the API: the event ID is **not unique**, so events are identified by event key, visitor
-key and timestamp together. Every table is loaded with a MERGE on its natural key: existing rows are updated, new rows
-inserted. That makes reruns safe."
+*Switch to the `src/wistia/` folder.*
 
-## 4. The code (3:45–5:30)
+As for the code, I built it the way code usually grows on a real team. I started with one script that made a single
+API call. Then I added pagination, retries, and logging. Then I pulled the reusable parts out into this library,
+added tests, and only then added the cloud pieces. Every one of those stages is its own commit, so you can follow the
+whole journey in the history.
 
-[Show] Tab 4, `src/wistia/` folder; click into `api.py`, then `ingestion.py` (`compute_window`), then `transform/`.
+*Open `api.py` briefly, then the `transform` folder.*
 
-"I built the code the way it grows in real projects: one working script first, then I moved the reusable parts into a
-library, then tests, then the cloud pieces. Each stage is one commit, so the history shows that evolution.
+This is the API client, with the retries and the paging. And this is the PySpark part, split into silver, gold and
+quality checks. These are pure functions: data goes in, data comes out, nothing else happens. That's what makes them
+easy to test. The same code runs on my laptop and in AWS. The only thing that changes is where files go: a local
+folder or S3, a JSON file or DynamoDB.
 
-- `api.py` is the Wistia client: token auth, retries with exponential backoff on rate limits and server errors, and
-  pagination until an empty page.
-- `ingestion.py` has the incremental logic. Each run pulls from the last loaded day up to its `run_date`: re-reading
-  the last loaded day is a one-day lookback that catches late events, and the MERGE makes it harmless.
-- `transform/` is the PySpark code, split into silver, gold and quality as **pure functions**: DataFrames in,
-  DataFrames out, no I/O, so they're unit-tested with a few hand-made rows.
-- The same library runs locally and in AWS. Only small adapters change: a local folder versus S3, a JSON file versus
-  DynamoDB. Locally, Spark runs in the official AWS Glue Docker image, so what I test is what runs in AWS."
+*Switch to the Actions tab.*
 
-## 5. CI/CD (5:30–6:30)
+Every change went in through a pull request, and every pull request runs these checks automatically: code style, 50
+unit tests including the Spark ones, and a test build of the whole AWS setup. Nothing got merged unless it was green.
+There's also a deploy workflow that logs into AWS without storing any keys in GitHub. For this project I deployed from
+my own terminal, and setting up the GitHub deploy is my next step.
 
-[Show] Tab 5, Actions tab (green runs), then Closed pull requests.
+Okay, so that's how it's built. Now let me show you it actually running.
 
-"Every change went through a pull request. CI runs on each one: linting, 50 unit tests including the PySpark ones
-with the HTTP calls and AWS mocked, and the infrastructure: CDK template tests and a full synth.
+*Switch to CloudFormation.*
 
-There's also a manual Deploy workflow that logs in to AWS with OIDC, so no AWS keys are stored in GitHub. For this
-project I deployed from the command line; wiring the GitHub deploy is the next step I'll do."
+This is everything that one deploy command created: the bucket, the DynamoDB table, the two Lambda functions, the
+Glue job, the Step Functions pipeline, the alarm, and the Athena setup. And one destroy command removes all of it.
 
-## 6. The live pipeline in AWS (6:30–10:00)
+*Switch to Step Functions and show the list of executions.*
 
-[Show] Tab 6, CloudFormation resources.
+Now, about that schedule. The requirement was to run in production for seven days. Instead of waiting a real week, I
+ran the deployed pipeline once for each day from March 17th to March 23rd, in order, exactly as the nightly schedule
+would. Here are those runs, all green. That eighth one at the top is March 20th again. I reran it on purpose to prove
+that rerunning a day doesn't create duplicates.
 
-"This is the deployed stack: the bucket, the DynamoDB table, two Lambdas, the Glue job and databases, the state
-machine, the disabled schedule, the alarm and the Athena workgroup. All of it was created by one `cdk deploy`, and
-one `cdk destroy` removes it."
+*Open the first run, show the green graph, then click Ingest and show its output.*
 
-[Show] Tab 7, Step Functions executions; open the first one (`sim-2026-03-17-…`), show the green graph, then click
-**Ingest** → Output.
+Here's one run. You can see the three steps went through in order. If I click on the ingest step, you can see it
+returns a run ID, and that ID gets handed to the Spark job, so it knows exactly which files to process.
 
-"Here's the simulated production week: eight executions, all succeeded: March 17 to 23, then the 20th again. Each run
-gets a `run_date` as input. The Ingest step returns a `run_id`, and Step Functions passes it to the Glue job, so the
-transform processes exactly the files that run wrote."
+*Switch to S3 and click down: `medias` → a media folder → `run_date=2026-03-17` → the run folder → open the file.*
 
-[Show] Tab 8, S3 `raw/wistia/` → `medias/` → `media_id=…/` → `run_date=2026-03-17/` → `run_id=…/` → open the file.
+Here's where the raw data lands. It's organized by endpoint, video, date and run, and every file records where it
+came from and when. These files can only be written once. S3 won't let anything overwrite them.
 
-"Raw data is partitioned by endpoint, media, run date and run ID. Each file wraps the API response with where and when
-it came from. Files are write-once: S3 refuses to overwrite them."
+*Switch to DynamoDB.*
 
-[Show] Tab 9, DynamoDB items.
+And here are the bookmarks. Both videos are at March 23rd, the last day of the week. Notice that rerunning March 20th
+didn't drag them backwards. The code only ever lets that date move forward.
 
-"The watermarks: both videos at March 23. The rerun of the 20th didn't move them back, because the write only allows
-the date to go forward."
+*Switch to Logs Insights and run the query.*
 
-[Show] Tab 10, Glue job runs.
+All the logs are written as JSON, which means I can query them. Here's each run and the dates it asked for: the 17th
+on its own, then the 17th to the 18th, then the 18th to the 19th, and so on. Each run reaches back one day, to catch
+any views that showed up late.
 
-"The Glue job ran eight times, each a couple of minutes, two small workers."
+*Switch to Athena, run the first query.*
 
-[Show] Tab 11, Logs Insights, run the query.
+And this is the proof. The Spark job writes one row for every run. Look at these two columns: "events read" is
+always bigger than "events new." That's the look-back day being read again and updated instead of added twice. By
+the end there are 39 events, which is exactly what I counted when I first explored the API. And the rerun of the 20th
+at the bottom read 5 events and added zero.
 
-"Every log line is JSON, so I can query the logs. Here each run's window per video: March 17 alone, then 17 to 18,
-and so on. You can see the lookback and the event counts."
+*Run the second query.*
 
-## 7. The evidence (10:00–11:30)
+Just to be sure, this counts duplicates: zero. The quality checks ran on every load too. The only thing they flagged
+was a small known gap between Wistia's daily play count and its list of events, so that's logged as a warning rather
+than treated as an error.
 
-[Show] Tab 12, Athena, query A.
+*Run the third query.*
 
-"This is the run log the Glue job writes. One row per run. `events_read` is always higher than `events_new`, because
-of the lookback; the re-read rows are updated, not duplicated. 39 events in total, exactly what the API exploration
-counted for this week. The rerun of the 20th read 5 events and added zero."
+So what does this tell the marketing team? The Facebook video, "The Gap Method," got 28 plays from 24 people, and
+about half the times it loaded, someone pressed play. People watched about 30 percent of it on average. The YouTube
+video is a very different story. It loads 150 to 300 times a day, but it was only played 11 times all week. That's a
+play rate under one percent. So people are landing on the page where it's embedded, but they aren't clicking it. If I
+were on that team, I'd look at where that video sits on the page before I touched the video itself.
 
-[Show] Query B.
+*Switch to `decisions.md`.*
 
-"And the duplicate check after the rerun: zero. The same check on both fact tables is in the evidence document, also
-zero. Data-quality checks run on every load; the only flag was a small known difference between Wistia's daily play
-count and its event list, which is logged as a warning."
+Finally, every decision I made is written down here with the reason behind it. A few worth mentioning: I used Step
+Functions with Lambda and Glue instead of Airflow, because for one run a day, managed Airflow would cost around 50
+cents an hour while this costs a few cents a run. I used Iceberg tables so that MERGE and safe reruns work. The
+requirement mentions Basic auth, but Wistia documents Bearer tokens, and both worked when I tested them, so I went with
+Bearer. And as I said, the seven days were simulated on the real pipeline rather than waited out. I didn't build a
+dashboard, since that part was optional and the SQL already answers the questions. The README has a table that maps
+every requirement to where it's met, including these choices.
 
-## 8. Results for the marketing team (11:30–13:00)
+*Back to the README.*
 
-[Show] Query C, then query D.
-
-"The Facebook video, 'The Gap Method': 28 plays from 24 visitors, and about half of its loads turn into plays.
-Viewers watch about 30 percent of it.
-
-The YouTube video is different: it's loaded 150 to 300 times a day, but played only 11 times all week: a play rate
-under 1 percent. That says the page where it's embedded loads the player automatically but people don't click it. So
-the first thing I'd look at is the placement, not the video.
-
-All viewers this week were in the US."
-
-## 9. Decisions and trade-offs (13:00–14:30)
-
-[Show] Tab 14, `docs/decisions.md`, then the README's requirements coverage table.
-
-"Every decision is logged with its reason. The main ones:
-
-- **Step Functions plus Lambda and Glue instead of Airflow**: at one run a day, managed Airflow would cost about 50
-  cents an hour; this costs cents per run.
-- **Iceberg with MERGE** for idempotent reruns.
-- **Bearer auth**: the requirement mentions Basic; both work, and Bearer is Wistia's documented method.
-- **Incremental by date window**: events have no updated timestamp, so the window uses the event date plus a lookback.
-- **The 7 days were simulated**: the real deployed pipeline ran seven consecutive dates in order instead of waiting a
-  calendar week. It's the same code and infrastructure as the daily schedule, and it also proved reruns are safe.
-- **No dashboard yet**: the report queries answer the questions; a dashboard is optional and planned next.
-
-The coverage table in the README maps each requirement to where it's met, including these deviations."
-
-## 10. Wrap-up (14:30–15:00)
-
-[Show] Tab 1, README.
-
-"To sum up: a deployed, tested, incremental and idempotent pipeline from the Wistia API to a star schema on AWS, with
-CI on every change and evidence of a full production week. Setup, run, deploy and teardown instructions are in the
-README. After this recording I tear the stack down with `cdk destroy`. Thanks for watching."
+So that's it: a pipeline that pulls from the Wistia API every day, only loads what's new, can safely rerun any day,
+checks its own data, and turns it into numbers the marketing team can actually use. Everything's tested on every
+change, and the setup, run and teardown steps are all in the README. Once I stop recording, I'll tear the whole stack
+down with one command. Thanks for watching.
