@@ -33,7 +33,7 @@ State: STATUS.md · History: docs/decisions.md (read it before re-deciding anyth
 | 4 | Deploy to AWS (user runs the commands) | Done 2026-11-10 (stack `WistiaPipeline`, us-east-1) |
 | 5 | Simulated 7-day production run: backfill script, 7 runs with `run_date`, run-log evidence | Done 2026-11-10 (`docs/05_production_run/`) |
 | 6 | Dashboard (optional FR11) | Skipped; done in the tutorial rebuild (decision 2026-11-10) |
-| 7 | README, walkthrough video, AWS teardown; then hand-typing tutorial in a separate practice folder | Next (README done) |
+| 7 | README, walkthrough video, AWS teardown; then hand-typing tutorial in a separate practice folder | Done 2026-11-10 (all AWS resources deleted); next: tutorial book |
 
 Timeline: finish in a couple of days. After the design is approved Claude builds everything; then
 explains it so the user retypes it by hand (separate practice folder, never the production repo).

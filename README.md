@@ -141,6 +141,10 @@ cd infra && cdk destroy WistiaPipeline
 aws secretsmanager delete-secret --secret-id wistia/api-token --force-delete-without-recovery --region us-east-1
 ```
 
+`cdk destroy` leaves the log groups that Glue created itself (`/aws-glue/jobs/*`); delete them with
+`aws logs delete-log-group`. To remove CDK's bootstrap too, delete the `CDKToolkit` stack, then its assets bucket
+`cdk-hnb659fds-assets-<account-id>-us-east-1`, which is retained and versioned (delete all object versions first).
+
 ## CI/CD (GitHub Actions)
 
 - **CI** (`.github/workflows/ci.yml`) on every pull request and push to `main`: ruff lint/format, unit tests
