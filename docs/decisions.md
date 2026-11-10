@@ -29,6 +29,18 @@ Newest entries are at the end of each table/log.
 | 2026-11-03 | Diagrams drawn in draw.io (`.drawio` source + 2× PNG export in `docs/02_design/`), replacing Mermaid | User: Mermaid output quality too low for the deliverable; draw.io gives AWS icons and exact layout |
 | 2026-11-03 | Walkthrough videos are not put on GitHub (not committed, not as release assets); shared with the SME directly. `*.mov`/`*.mp4` stay ignored | User decision: recordings are review material, not part of the code deliverable; keeps the public repo free of large binaries and of anything accidentally shown on screen |
 | 2026-11-03 | Design submitted to the external SME; Step 3 waits for their approval | User decision: get real sign-off before building (the earlier 'user acts as SME' approval stands as the internal approval) |
+| 2026-11-04 | SME approved the design and the 4 points: play_rate in `fact_media_daily`; channel `9k4tbcdfg0` = Facebook, `8hunphufxp` = YouTube; Bearer auth; simulated 7-day run (2026-03-17 → 23) | Reported by the user. Step 3 build starts |
+| 2026-11-04 | Glue **5.1** instead of 5.0 (Spark 3.5.6, Python 3.11, Iceberg 1.10) | The local test image is `aws-glue-libs:5.1.0` (native arm64); deploying the same version means what is tested locally is what runs in AWS. Same Spark major version, no design change |
+| 2026-11-04 | Channel mapping passed to Glue as a JSON job argument (`--media_config`), built from `config/media.yaml` at `cdk synth`; Lambda gets it as env var `MEDIA_CONFIG` | The Glue image has no PyYAML; one source of truth (the YAML) without extra Glue modules |
+| 2026-11-04 | Iceberg catalog named `lake` everywhere (Hadoop catalog in `lake/warehouse` locally, Glue Data Catalog on S3 in AWS); Glue databases `wistia_silver`, `wistia_gold`, `wistia_ops` created by CDK | Identical SQL locally and in AWS; `cdk destroy` removes the databases with their tables |
+| 2026-11-04 | Gold is rebuilt only for keys the run touched (media × days in the window, visitors seen), from all of silver, then `MERGE`d | Late events re-read by the lookback update existing gold rows; reruns are idempotent |
+| 2026-11-04 | DQ checks run after the `MERGE`; a failed critical check marks the run failed in `ops.pipeline_runs`, fails the Glue job, and the watermark does not move | Simple and visible; the next run re-processes the same window. Plays-vs-events reconciliation is a warning: Wistia's daily `play_count` and the event count differ slightly (e.g. 8 vs 9 on 2026-03-17) |
+| 2026-11-04 | Raw files are write-once: `IfNoneMatch="*"` on S3 put, refuse-overwrite locally; every ingestion run has its own `run_id` folder | Raw stays immutable even when a step is retried |
+| 2026-11-04 | Watermark only moves forward (DynamoDB conditional write) | Rerunning an old day (e.g. 2026-03-20 after 2026-03-23) must not undo later loads |
+| 2026-11-04 | Lambda code bundled locally with `uv pip install --python-platform aarch64-manylinux2014` (no Docker at synth) | Works the same on the Mac and in GitHub Actions |
+| 2026-11-04 | Bucket, table and log groups use `RemovalPolicy.DESTROY` (+ auto-delete objects) | Learning project: `cdk destroy` in Step 7 must leave nothing that costs money |
+| 2026-11-04 | GitHub deploy via OIDC role (`WistiaGithubOidc` stack) limited to this repo's `production` environment and to assuming the CDK bootstrap roles | No long-lived AWS keys in GitHub; least privilege |
+| 2026-11-04 | Daily schedule loads **yesterday** (`scheduled_time` − 1 day); manual/simulated runs pass `run_date` | Today's data is incomplete at 02:00 UTC |
 
 ## Change log
 
@@ -39,3 +51,6 @@ Newest entries are at the end of each table/log.
 - 2026-11-03: PR #1 (Steps 1–2) merged. Architecture and data model redrawn in draw.io.
 - 2026-11-03: Design walkthrough recorded by the user (kept local, not on GitHub); submitted to the SME.
 - 2026-11-03: Session handoff; waiting for SME approval before Step 3.
+- 2026-11-04: SME approved the design; Step 3 build started on branch `worktree-step-3-build`.
+- 2026-11-04: Step 3 built in 11 stages (3.1–3.11), one commit each. Local simulated week (2026-03-17 → 23 + rerun of
+  2026-03-20) reproduces Step 1: 39 events (8hunphufxp 11, 9k4tbcdfg0 28), 0 duplicated keys after the rerun.

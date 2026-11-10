@@ -1,0 +1,45 @@
+[project]
+name = "wistia-video-analytics"
+version = "0.1.0"
+description = "Wistia Stats API -> AWS data pipeline (Python ingestion, PySpark transforms)"
+readme = "README.md"
+# Glue 5.0 runs Python 3.11 and Lambda runs 3.12, so the shared code must work on 3.11.
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.32",
+    "python-dotenv>=1.0",
+    "pyyaml>=6.0",
+    "boto3>=1.43.123",
+]
+
+# The library in src/wistia/ is installed into the virtual environment (editable),
+# so jobs and tests can `import wistia` from anywhere.
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/wistia"]
+
+[dependency-groups]
+dev = [
+    "moto[dynamodb,s3,secretsmanager]>=5.2.5",
+    "pyspark==3.5.6",
+    "pytest>=9.2.0",
+    "responses>=0.26.3",
+    "ruff>=0.17.3",
+]
+infra = [
+    "aws-cdk-lib>=2.275.0",
+    "constructs>=10.8.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]

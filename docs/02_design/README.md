@@ -1,6 +1,7 @@
 # Step 2: Architecture and data model
 
-Status: **approved 2026-11-03** by the user; submitted to the SME for sign-off (pending).
+Status: **approved 2026-11-03** by the user; **approved by the SME 2026-11-04**, including the 4 points in section 3 and the
+speaker notes (play rate in `fact_media_daily`, channel mapping, Bearer auth, simulated 7-day run).
 Inputs: [requirements](../00_requirements/requirements.md), [Step 1 API findings](../01_api_exploration/README.md).
 
 ## 1. Architecture
@@ -17,7 +18,7 @@ Source: [`architecture.drawio`](architecture.drawio) (open in draw.io / diagrams
 | Secret | Secrets Manager | Token never in code, Git, env files or logs. The user creates the secret once from the CLI |
 | Incremental state | DynamoDB (on-demand) | One item per media: last successfully loaded date. Consistent writes, ~free |
 | Raw storage | S3 `raw/` | Immutable API responses as received, so any day can be reprocessed without calling Wistia again |
-| Transformation | Glue 5.0 job (PySpark 3.5), G.1X × 2 | Required PySpark; serverless; ~1–2 min per run (≈$0.03) |
+| Transformation | Glue 5.1 job (PySpark 3.5), G.1X × 2 (was 5.0; see decisions 2026-11-04) | Required PySpark; serverless; ~1–2 min per run (≈$0.03) |
 | Tables | Apache Iceberg on S3 + Glue Data Catalog | `MERGE` upserts make reruns idempotent (no duplicates); Athena reads them directly |
 | Query / reports | Athena | SQL over the gold tables; dashboard choice in Step 6 |
 | Monitoring | CloudWatch Logs (JSON lines), alarm on failed executions → SNS email | See every run; get an email when one fails |
@@ -89,7 +90,7 @@ to both dimensions. `channel` is an assumption from config: `9k4tbcdfg0` = Faceb
 
 ## 4. Environments, security, operations
 
-- **local:** ingestion runs on the Mac and writes to `lake/` (git-ignored); PySpark runs in the AWS Glue 5 Docker image; same
+- **local:** ingestion runs on the Mac and writes to `lake/` (git-ignored); PySpark runs in the AWS Glue 5.1 Docker image; same
   code, switched by `PIPELINE_ENV=local|prod`.
 - **prod:** the AWS stack above. Least-privilege IAM roles per component; S3 bucket private, encrypted, public access blocked.
 - Personal data (IP, city) only in the private bucket; the public repo holds masked samples only.
