@@ -46,6 +46,7 @@ Newest entries are at the end of each table/log.
 | 2026-11-10 | GitHub Actions deploy (OIDC role, `AWS_DEPLOY_ROLE_ARN`, `production` environment) not set up in this project; done during the rebuild from the tutorial | User decision, to finish faster. The Deploy workflow and OIDC stack are built and synthesized; the real deployment ran from the CLI |
 | 2026-11-10 | No dashboard (optional FR11); report queries + results in docs/05_production_run instead; dashboard built during the rebuild | User decision, to finish faster |
 | 2026-11-10 | Speaker notes (design and final walkthrough) kept local only, removed from Git and git-ignored | User decision: they are recording scripts, not project documentation |
+| 2026-11-10 | Full teardown, including the `CDKToolkit` bootstrap stack and its retained assets bucket | User decision: leave nothing in the account; the rebuild starts again with `cdk bootstrap` |
 
 ## Change log
 
@@ -64,3 +65,5 @@ Newest entries are at the end of each table/log.
   evidence in docs/05_production_run/README.md.
 - 2026-11-10: README results + requirements coverage (FR1–FR12) added; Step 7 started.
 - 2026-11-10: Walkthrough speaker notes written (PRs #8–#10), then removed from the repo; kept locally.
+- 2026-11-10: Walkthrough video recorded (local only). Teardown: `WistiaPipeline` and `CDKToolkit` destroyed, secret, leftover
+  log groups and the CDK assets bucket deleted; account checked clean. Step 7 done.

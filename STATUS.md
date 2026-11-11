@@ -1,56 +1,52 @@
 # Status: Wistia Video Analytics Pipeline
-Updated: 2026-11-10 (Steps 4–5 done)
+Updated: 2026-11-10 (Step 7 done, AWS torn down)
 
 ## Where we are
-Steps 0–5 done. The pipeline is **deployed in AWS (us-east-1) and still running/deployed** (stack `WistiaPipeline`).
-The simulated 7-day production run (FR8) passed: 8 Step Functions runs (2026-03-17 → 23 + rerun of 03-20) all
-`SUCCEEDED`, 39 events, 0 duplicates. Evidence: `docs/05_production_run/README.md`. Steps 4.5 (GitHub deploy)
-and 6 (dashboard) are deferred to the tutorial rebuild. Next: Step 7 (README done → video → teardown), then the book.
+Steps 0–7 done. The pipeline was deployed, ran the simulated 7-day production week (8 runs SUCCEEDED, 39 events,
+0 duplicates; evidence in `docs/05_production_run/README.md`), the final walkthrough video was recorded (local only),
+and **everything was deleted from AWS** (account checked clean on 2026-11-10). Next: the FINAL step, the local-only
+tutorial book.
 
 ## Done this session (2026-11-10)
-- PR #5 (Step 3 build) merged (fd8ef0f).
-- Code walkthrough with the user in the VS Code debugger (ingestion, transform, AWS adapters). Debug configs live in
-  `.claude/worktrees/step-3-build/.vscode/launch.json` (local only, not committed).
-- Step 4 (user ran): `cdk bootstrap aws://<account-id>/us-east-1` → secret `wistia/api-token` → `cdk deploy
-  WistiaPipeline` (CREATE_COMPLETE, ~3 min) → smoke test = day 1 (`simulate_week.py --start 2026-03-17 --days 1`).
-- Step 5 (user ran): `simulate_week.py --start 2026-03-18 --days 6 --rerun 2026-03-20`; `athena_query.py
-  sql/evidence.sql`. events_new per run 9,5,6,5,3,3,8 and 0 for the rerun; watermarks stay at 2026-03-23;
-  only DQ failures are the known `reconcile:plays_vs_events` warnings. Matches the local run and Step 1 exactly.
+- PR #5 (Step 3 build) merged. Code walkthrough in the VS Code debugger.
+- Step 4: `cdk bootstrap` → secret `wistia/api-token` → `cdk deploy WistiaPipeline` → smoke test (day 1).
+- Step 5: simulated week + rerun of 2026-03-20; evidence and report results (PR #6).
+- Step 7: README results + FR1–FR12 coverage (PR #7); walkthrough speaker notes (PRs #8–#10), then removed from Git
+  and git-ignored (PR #11; local copies in `docs/02_design/` and `docs/07_walkthrough/` of the main folder and in
+  `~/Documents/DataEngineerBootcamp/Books/WistiaVideoAnalytics/speaker_notes/`); video recorded (local only).
+- Teardown (user ran): `cdk destroy WistiaPipeline`; secret deleted; 4 leftover log groups deleted; `CDKToolkit`
+  stack deleted; its retained, versioned assets bucket emptied (all versions + delete markers) and deleted.
 
 ## Next actions
-1. User merges the Step 7 README PR, then `cd ~/Documents/DataEngineerBootcamp/Projects/WistiaVideoAnalytics && git pull`.
-2. User confirms the SNS email subscription (still `PendingConfirmation` on 2026-11-10).
-3. Step 7 video: user records the final walkthrough **while the stack is still deployed** (console: Step Functions
-   history, S3 raw/, Athena evidence). Video stays local, never on GitHub.
-4. Step 7 teardown (user, after the video): `cd infra && cdk destroy WistiaPipeline`, then delete the secret
-   (README "Teardown"); optionally also the `CDKToolkit` bootstrap stack.
-5. FINAL: the local-only tutorial book; its rebuild guide includes Step 4.5 (GitHub OIDC deploy) and Step 6
-   (dashboard), both skipped in this project. Spec in Claude's project memory `final-step-tutorial-book`.
+1. FINAL: the local-only tutorial book in `~/Documents/DataEngineerBootcamp/Books/WistiaVideoAnalytics/` (every tool,
+   data-engineering perspective, examples + practice, project walkthrough, rebuild guide 3.1 → 3.11 including
+   Step 4.5 GitHub OIDC deploy and Step 6 dashboard). Spec in Claude's project memory `final-step-tutorial-book`.
 
 ## Open items
-- AWS stack is live: cost ~$0 idle + $0.40/month for the secret until teardown.
-- SNS alert subscription not yet confirmed (see Next actions 2).
-- A DQ failure in Glue is retried twice by Step Functions (same result); acceptable, costs ~$0.06.
+- AWS: nothing left from this project. One unconfirmed SNS email subscription to the deleted alert topic still shows
+  (`PendingConfirmation`); AWS removes it by itself within 3 days, no cost.
+- Not ours, left alone: Athena default workgroup `primary`; SNS topic `s3-s3-cross-region-migration`.
 - Merged remote branches that can be deleted (user only): `worktree-step-1-plan-api-exploration`,
   `worktree-step-2-drawio-diagram`, `worktree-step-2-sme-speaker-notes`, `worktree-step-2-video-link`,
-  `worktree-step-3-build`.
+  `worktree-step-3-build`, and the Step 4–7 `worktree-*` branches.
+- Speaker notes are still readable in old commits of the public history (no secrets in them); rewriting history was
+  not done.
 
 ## Environment gotchas
-- AWS CLI default region on the Mac is **us-west-1**; the project is in **us-east-1**: always pass `--region us-east-1`
-  and switch the console to N. Virginia.
-- Deployed names: bucket `wistiapipeline-databuckete3889a50-dlqzxfwnylfh`, watermark table
-  `WistiaPipeline-WatermarksC54B9051-O9YJKSI39TD7` (both change if the stack is recreated).
+- AWS CLI default region on the Mac is **us-west-1**; the project is in **us-east-1**: always pass `--region us-east-1`.
+- Rebuilding on AWS starts from zero: `cdk bootstrap aws://<account-id>/us-east-1`, then `create-secret` (token in `.env`).
+- The CDK assets bucket is retained and versioned: after deleting `CDKToolkit`, delete all object versions, then the bucket.
+- In zsh, `$VAR` holding several words is not split: write options like `--region us-east-1` out in full.
 - Debug the PySpark transform in VS Code without Docker: venv Python + env `TZ=UTC` and
   `PYSPARK_SUBMIT_ARGS="--packages org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.10.0 pyspark-shell"`.
 - The SessionStart hook reads STATUS.md from the **main folder**: after merging a PR, run `git pull` there.
 - `.env` (token) lives in the main project folder only; `jobs/ingest.py` finds it by walking up from the worktree.
-- PySpark runs locally only through `scripts/spark_local.sh` (Glue 5.1 image, arm64). It keeps the image's
-  PYTHONPATH (PyGlue.zip) and adds `/work/src`. The image has no PyYAML: the channel mapping is passed as JSON.
+- PySpark runs locally through `scripts/spark_local.sh` (Glue 5.1 image, arm64). The image has no PyYAML: the channel
+  mapping is passed as JSON.
 - Unit tests force UTC (`tests/conftest.py`), otherwise PySpark converts timestamps to the Mac's time zone.
 - `cdk synth` bundles the Lambda with `uv pip install --python-platform aarch64-manylinux2014` (no Docker).
 - Claude's worktree guard blocks complex shell commands (loops, `$(...)`, `source`): use plain commands.
-- Export diagrams: `/Applications/draw.io.app/Contents/MacOS/draw.io -x -f png -s 2 -b 20 -o <out>.png <in>.drawio`
-- Video (local, ignored): `docs/02_design/DesignExplinationVideo.mov` in the main folder. Never upload to GitHub.
+- Videos (local, ignored): `docs/02_design/DesignExplinationVideo.mov` and the final walkthrough. Never upload to GitHub.
 
 ## Key facts to keep straight
 - Media IDs in scope: `8hunphufxp` (YouTube), `9k4tbcdfg0` (Facebook), from `config/media.yaml` (SME-confirmed).
